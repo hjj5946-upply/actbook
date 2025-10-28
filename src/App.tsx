@@ -1,16 +1,27 @@
-function App() {
+import React from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
+import LockScreen from "./components/LockScreen";
+import AccountBookScreen from "./components/AccountBookScreen";
+
+export default function App() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white rounded-xl shadow p-6 w-[360px]">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          Tailwind v3 정상 동작 확인 🎉
-        </h1>
-        <p className="text-sm text-gray-500">
-          배경이 회색이고 가운데 흰 카드가 있으면 성공.
-        </p>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {/* 잠금/로그인 페이지 */}
+        <Route path="/lock" element={<LockScreen />} />
+
+        {/* 실제 가계부 화면 */}
+        <Route path="/app" element={<AccountBookScreen />} />
+
+        {/* 기본 진입은 /lock 으로 */}
+        <Route path="*" element={<Navigate to="/lock" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;
