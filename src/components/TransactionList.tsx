@@ -22,9 +22,9 @@ function toNumber(v: string): number | null {
   return isNaN(n) ? null : n;
 }
 
-function formatKRW(amount: number) {
-  return amount.toLocaleString("ko-KR") + "원";
-}
+// function formatKRW(amount: number) {
+//   return amount.toLocaleString("ko-KR") + "원";
+// }
 function formatDate(dateStr: string) {
   return dateStr;
 }

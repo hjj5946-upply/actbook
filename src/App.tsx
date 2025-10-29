@@ -1,13 +1,13 @@
-import React from "react";
+// import React from "react";
 import { PasswordGateProvider, usePasswordGateContext } from "./PasswordGateContext";
-import { LedgerStoreProvider, useLedgerStoreContext } from "./LedgerStoreContext";
+import { LedgerStoreProvider, /* useLedgerStoreContext */ } from "./LedgerStoreContext";
 
 import LockScreen from "./components/LockScreen";
 import AccountBookScreen from "./components/AccountBookScreen";
 
 function RootContent() {
   const { ready, hasPassword, isUnlocked, setupPassword, unlock } = usePasswordGateContext();
-  const ledgerStore = useLedgerStoreContext(); // 사용은 아직 안 하더라도 여기서 호출 가능
+  // const ledgerStore = useLedgerStoreContext(); // 사용은 아직 안 하더라도 여기서 호출 가능
   // ledgerStore.ready 등을 여기서 확인할 수 있게 될 것
 
   // 비번 관련 준비 안 끝났으면 로딩

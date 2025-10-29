@@ -11,7 +11,7 @@ export function LedgerStoreProvider({ children }: { children: React.ReactNode })
 
 // Consumer 훅: 아래 훅으로 어디서든 ledger 데이터를 꺼내 쓴다.
 export function useLedgerStoreContext() {
-  const ctx = React.useContext(LedgerCtx);
+  const ctx = useContext(LedgerCtx);
   if (!ctx) {
     throw new Error("useLedgerStoreContext must be used within LedgerStoreProvider");
   }

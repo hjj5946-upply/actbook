@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { useLedgerStoreContext } from "../LedgerStoreContext";
 import TransactionInputForm from "./TransactionInputForm";
 import TransactionList from "./TransactionList";
