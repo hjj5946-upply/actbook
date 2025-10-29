@@ -129,7 +129,7 @@ export default function TransactionList() {
                           "text-xs font-semibold rounded px-2 py-0.5 " +
                           (item.type === "income"
                             ? "bg-green-100 text-green-700"
-                            : "bg-[#ed374f]/25 text-red-700")
+                            : "bg-red-100 text-red-700")
                         }
                       >
                         {item.type === "income" ? "수입" : "지출"}
@@ -144,7 +144,7 @@ export default function TransactionList() {
                         </span>
                       ) : (
                         <select
-                          className="border rounded px-2 py-1 text-[11px] outline-none focus:ring-2 focus:ring-blue-500"
+                          className="border rounded px-2 py-1 text-[11px] text-gray-900 outline-none focus:ring-2 focus:ring-blue-500"
                           value={editCategory}
                           onChange={(e) => setEditCategory(e.target.value)}
                         >
@@ -155,6 +155,7 @@ export default function TransactionList() {
                           ))}
                         </select>
                       )}
+
                     </div>
 
 
@@ -164,7 +165,7 @@ export default function TransactionList() {
                       </div>
                     ) : (
                       <input
-                        className="mt-2 w-full border rounded px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-blue-500"
+                        className="mt-2 w-full border rounded px-2 py-1 text-sm text-gray-900 outline-none focus:ring-2 focus:ring-blue-500"
                         value={editMemo}
                         onChange={handleMemoChange}
                         placeholder="메모 (최대 30자)"
@@ -176,13 +177,12 @@ export default function TransactionList() {
                   <div className="flex flex-col items-end gap-2 min-w-[140px]">
                     {!isEditing ? (
                       <div
-                        className={
-                          "text-base font-semibold text-right " +
-                          (item.type === "income"
-                            ? "text-green-600"
-                            : "text-red-600")
-                        }
+                        className="text-base font-semibold text-right"
+                        style={{
+                          color: item.type === "income" ? "#4fc785" : "#f8687b"
+                        }}
                       >
+
                         {item.type === "income"
                           ? "+" + item.amount.toLocaleString("ko-KR") + "원"
                           : "-" + item.amount.toLocaleString("ko-KR") + "원"}
@@ -190,10 +190,10 @@ export default function TransactionList() {
                     ) : (
                       <input
                         className={
-                          "w-full border rounded px-2 py-1 text-right text-sm font-semibold outline-none focus:ring-2 focus:ring-blue-500 " +
+                          "w-full border rounded px-2 py-1 text-right text-sm font-semibold text-gray-900 outline-none focus:ring-2 focus:ring-blue-500 " +
                           (item.type === "income"
-                            ? "text-green-600"
-                            : "text-red-600")
+                            ? ""
+                            : "")
                         }
                         value={editAmountInput}
                         onChange={handleAmountChange}
