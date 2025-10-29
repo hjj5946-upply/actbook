@@ -157,6 +157,7 @@ export default function TransactionList() {
                       )}
                     </div>
 
+
                     {!isEditing ? (
                       <div className="mt-1 text-gray-200 text-sm break-words">
                         {item.memo || "-"}
