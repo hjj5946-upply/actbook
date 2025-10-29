@@ -65,7 +65,7 @@ export default function BackupPanel() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow p-4 text-sm text-gray-800">
+    <div className="bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
       <h2 className="text-lg font-semibold mb-2">백업 / 복원</h2>
 
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
@@ -78,7 +78,7 @@ export default function BackupPanel() {
 
         <button
           onClick={triggerUpload}
-          className="bg-gray-200 hover:bg-gray-300 text-gray-800 text-xs font-medium rounded-lg px-3 py-2 transition-colors border border-gray-300"
+          className="bg-gray-200 hover:bg-gray-400 text-gray-800 text-xs font-medium rounded-lg px-3 py-2 transition-colors border border-gray-400"
         >
           백업 불러오기 (JSON 업로드)
         </button>
@@ -96,7 +96,7 @@ export default function BackupPanel() {
         <p className="text-[11px] text-gray-500 mt-3">{message}</p>
       )}
 
-      <p className="text-[11px] text-gray-400 mt-2 leading-relaxed">
+      <p className="text-[11px] text-gray-300 mt-2 leading-relaxed">
         "백업 저장하기"로 받은 .json 파일만 있으면
         다른 PC나 브라우저에서도 "백업 불러오기"로 그대로 복구할 수 있습니다.
         (주의: 복원 시 현재 기록은 덮어쓰기됩니다.)

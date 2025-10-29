@@ -41,7 +41,7 @@ export default function TransactionList() {
 
   if (!ready) {
     return (
-      <div className="bg-white rounded-xl shadow p-4 text-gray-500 text-sm">
+      <div className="bg-white rounded-xl shadow p-4 text-gray-200 text-sm">
         가계부 불러오는 중...
       </div>
     );
@@ -100,19 +100,19 @@ export default function TransactionList() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow flex flex-col h-full">
+    <div className="bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow shadow flex flex-col h-full">
       {/* 헤더 영역 (스크롤 고정) */}
-      <div className="p-4 border-b border-gray-200 flex-shrink-0">
+      <div className="p-4 border-b border-gray-400 flex-shrink-0">
         <h2 className="text-lg font-semibold mb-1">거래 내역</h2>
         {items.length === 0 && (
-          <p className="text-sm text-gray-500 m-0">아직 기록이 없습니다.</p>
+          <p className="text-sm text-gray-200 m-0">아직 기록이 없습니다.</p>
         )}
       </div>
 
       {/* 리스트 영역 (이 부분만 스크롤) */}
-      <div className="flex-1 overflow-y-auto max-h-[600px] md:max-h-[720px] lg:max-h-[800px] p-4">
+      <div className="flex-1 overflow-y-auto max-h-[580px] md:max-h-[700px] lg:max-h-[780px] p-4">
         {items.length > 0 && (
-          <ul className="divide-y divide-gray-200">
+          <ul className="divide-y divide-gray-400">
             {items.map((item: LedgerItem) => {
               const isEditing = editId === item.id;
 
@@ -129,17 +129,17 @@ export default function TransactionList() {
                           "text-xs font-semibold rounded px-2 py-0.5 " +
                           (item.type === "income"
                             ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700")
+                            : "bg-[#ed1a36]/25 text-red-700")
                         }
                       >
                         {item.type === "income" ? "수입" : "지출"}
                       </span>
-                      <span className="text-gray-500 text-xs">
+                      <span className="text-gray-200 text-xs">
                         {formatDate(item.date)}
                       </span>
 
                       {!isEditing ? (
-                        <span className="text-gray-400 text-[11px]">
+                        <span className="text-gray-300 text-[11px]">
                           {item.category || "분류없음"}
                         </span>
                       ) : (
@@ -158,7 +158,7 @@ export default function TransactionList() {
                     </div>
 
                     {!isEditing ? (
-                      <div className="mt-1 text-gray-800 text-sm break-words">
+                      <div className="mt-1 text-gray-200 text-sm break-words">
                         {item.memo || "-"}
                       </div>
                     ) : (
@@ -204,7 +204,7 @@ export default function TransactionList() {
                     {!isEditing ? (
                       <div className="flex gap-2">
                         <button
-                          className="text-xs text-gray-500 hover:text-gray-700 border border-gray-300 hover:border-gray-500 rounded px-2 py-1"
+                          className="text-xs text-gray-200 hover:text-gray-300 border border-gray-200 hover:border-gray-300 rounded px-2 py-1"
                           onClick={() => startEdit(item)}
                         >
                           수정
@@ -227,13 +227,13 @@ export default function TransactionList() {
 
                         <div className="flex gap-2 flex-wrap justify-end w-full">
                           <button
-                            className="text-xs text-white bg-blue-600 hover:bg-blue-700 border border-blue-600 rounded px-2 py-1"
+                            className="text-xs text-white bg-[#ed1a36] hover:bg-[#d21731]  rounded px-2 py-1"
                             onClick={() => saveEdit(item.id)}
                           >
                             저장
                           </button>
                           <button
-                            className="text-xs text-gray-500 hover:text-gray-700 border border-gray-300 hover:border-gray-500 rounded px-2 py-1"
+                            className="text-xs text-gray-200 hover:text-gray-300 border border-gray-200 hover:border-gray-300 rounded px-2 py-1"
                             onClick={cancelEdit}
                           >
                             취소

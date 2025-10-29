@@ -1,16 +1,21 @@
-// import React from "react";
+import React from "react";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
 import { PasswordGateProvider, usePasswordGateContext } from "./PasswordGateContext";
-import { LedgerStoreProvider, /* useLedgerStoreContext */ } from "./LedgerStoreContext";
+import { LedgerStoreProvider } from "./LedgerStoreContext";
 
 import LockScreen from "./components/LockScreen";
 import AccountBookScreen from "./components/AccountBookScreen";
 
-function RootContent() {
-  const { ready, hasPassword, isUnlocked, setupPassword, unlock } = usePasswordGateContext();
-  // const ledgerStore = useLedgerStoreContext(); // 사용은 아직 안 하더라도 여기서 호출 가능
-  // ledgerStore.ready 등을 여기서 확인할 수 있게 될 것
+// /lock 전용 라우트
+function LockRoute() {
+  const { ready, hasPassword, setupPassword, unlock, isUnlocked } = usePasswordGateContext();
 
-  // 비번 관련 준비 안 끝났으면 로딩
   if (!ready) {
     return (
       <div className="min-h-screen flex items-center justify-center text-gray-500">
@@ -19,19 +24,38 @@ function RootContent() {
     );
   }
 
-  // 잠금 안 풀렸으면 잠금 화면
-  if (!isUnlocked) {
+  // 이미 잠금 풀렸으면 /app 으로 보내버림
+  if (isUnlocked) {
+    return <Navigate to="/app" replace />;
+  }
+
+  return (
+    <LockScreen
+      hasPassword={hasPassword}
+      onSetup={setupPassword}
+      onUnlock={unlock}
+    />
+  );
+}
+
+// /app 전용 라우트
+function AppRoute() {
+  const { ready, isUnlocked } = usePasswordGateContext();
+
+  if (!ready) {
     return (
-      <LockScreen
-        hasPassword={hasPassword}
-        onSetup={setupPassword}
-        onUnlock={unlock}
-      />
+      <div className="min-h-screen flex items-center justify-center text-gray-500">
+        로딩중...
+      </div>
     );
   }
 
-  // 잠금 풀렸으면 가계부 화면
-  // (3단계에서 실제 데이터 표시하도록 AccountBookScreen을 고도화할 거다)
+  // 아직 언락 안 됐으면 /lock으로 돌린다.
+  if (!isUnlocked) {
+    return <Navigate to="/lock" replace />;
+  }
+
+  // 언락된 상태면 실제 가계부 화면
   return <AccountBookScreen />;
 }
 
@@ -39,7 +63,13 @@ export default function App() {
   return (
     <PasswordGateProvider>
       <LedgerStoreProvider>
-        <RootContent />
+        <BrowserRouter basename="/actbook">
+          <Routes>
+            <Route path="/lock" element={<LockRoute />} />
+            <Route path="/app" element={<AppRoute />} />
+            <Route path="*" element={<Navigate to="/lock" replace />} />
+          </Routes>
+        </BrowserRouter>
       </LedgerStoreProvider>
     </PasswordGateProvider>
   );

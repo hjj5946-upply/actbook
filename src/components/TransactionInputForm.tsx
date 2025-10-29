@@ -99,14 +99,14 @@ export default function TransactionInputForm() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow p-4">
+    <div className="bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
       <h2 className="text-lg font-semibold mb-3">새 거래 입력</h2>
 
       <form onSubmit={handleSubmit} className="space-y-3 text-sm text-gray-800">
 
         {/* 날짜 */}
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-gray-200 mb-1">
             날짜
           </label>
           <input
@@ -119,7 +119,7 @@ export default function TransactionInputForm() {
 
         {/* 구분 */}
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-gray-200 mb-1">
             구분
           </label>
           <select
@@ -136,7 +136,7 @@ export default function TransactionInputForm() {
 
         {/* 금액 (콤마 표시, 숫자만 허용, 12자리 제한) */}
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-gray-200 mb-1">
             금액 (원)
           </label>
           <input
@@ -151,7 +151,7 @@ export default function TransactionInputForm() {
 
         {/* 카테고리 */}
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-gray-200 mb-1">
             카테고리
           </label>
           <select
@@ -169,7 +169,7 @@ export default function TransactionInputForm() {
 
         {/* 메모 (30자 제한, 비워도 됨) */}
         <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">
+          <label className="block text-xs font-medium text-gray-200 mb-1">
             메모 (선택)
           </label>
           <input
@@ -190,7 +190,7 @@ export default function TransactionInputForm() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg py-2 transition-colors"
+          className="w-full bg-[#ed1a36] hover:bg-[#d21731] text-white text-sm font-medium rounded-lg py-2 transition-colors"
         >
           추가
         </button>
