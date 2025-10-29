@@ -190,7 +190,7 @@ export default function TransactionInputForm() {
 
         <button
           type="submit"
-          className="w-full bg-[#ed1a36] hover:bg-[#d21731] text-white text-sm font-medium rounded-lg py-2 transition-colors"
+          className="w-full bg-[#ed374f] hover:bg-[#d21731] text-white text-sm font-medium rounded-lg py-2 transition-colors"
         >
           추가
         </button>

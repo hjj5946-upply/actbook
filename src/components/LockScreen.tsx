@@ -51,9 +51,9 @@ export default function LockScreen({
         {/* 중앙 아이콘 */}
         <h1 className="flex items-center justify-center mb-4">
           {hasPassword ? (
-            <LockKeyholeOpen className="w-9 h-9 text-[#ed1a36]" />
+            <LockKeyholeOpen className="w-9 h-9 text-[#ed374f]" />
           ) : (
-            <LockKeyhole className="w-9 h-9 text-[#ed1a36]" />
+            <LockKeyhole className="w-9 h-9 text-[#ed374f]" />
           )}
         </h1>
 
@@ -67,7 +67,7 @@ export default function LockScreen({
               type="password"
               inputMode="numeric"
               maxLength={8}
-              className="w-full border border-gray-600 bg-[#1e1e1e] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:ring-2 focus:ring-[#ed1a36] focus:border-[#ed1a36] transition"
+              className="w-full border border-gray-600 bg-[#1e1e1e] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-[#ed374f] transition"
               value={pw}
               onChange={(e) => {
                 const next = e.target.value.replace(/[^0-9]/g, "");
@@ -87,7 +87,7 @@ export default function LockScreen({
                 type="password"
                 inputMode="numeric"
                 maxLength={8}
-                className="w-full border border-gray-600 bg-[#1e1e1e] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:ring-2 focus:ring-[#ed1a36] focus:border-[#ed1a36] transition"
+                className="w-full border border-gray-600 bg-[#1e1e1e] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-[#ed374f] transition"
                 value={pw2}
                 onChange={(e) => {
                   const next = e.target.value.replace(/[^0-9]/g, "");
@@ -99,13 +99,13 @@ export default function LockScreen({
           )}
 
           {/* 에러 메시지 */}
-          {error && <div className="text-sm text-[#ed1a36]">{error}</div>}
+          {error && <div className="text-sm text-[#ed374f]">{error}</div>}
 
           {/* 버튼 */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#ed1a36] hover:bg-[#d21731] active:bg-[#b9122a] text-white text-sm font-medium rounded-lg py-2 transition-colors disabled:opacity-50 shadow-[0_0_10px_rgba(237,26,54,0.3)] hover:shadow-[0_0_20px_rgba(237,26,54,0.4)]"
+            className="w-full bg-[#ed374f] hover:bg-[#d21731] active:bg-[#b9122a] text-white text-sm font-medium rounded-lg py-2 transition-colors disabled:opacity-50 shadow-[0_0_10px_rgba(237,26,54,0.3)] hover:shadow-[0_0_20px_rgba(237,26,54,0.4)]"
           >
             {loading
               ? hasPassword

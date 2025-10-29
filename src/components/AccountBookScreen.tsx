@@ -58,19 +58,19 @@ export default function AccountBookScreen() {
               <div className="text-sm text-gray-200 space-y-1">
                 <div className="flex justify-between">
                   <span>수입 합계</span>
-                  <span className="font-medium" style={{ color: "#3fb37f" }}>
+                  <span className="font-medium" style={{ color: "#4fc785ff" }}>
                     {formatKRW(stats.incomeSum)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>지출 합계</span>
-                  <span className="font-medium" style={{ color: "#f7314bff" }}>
+                  <span className="font-medium" style={{ color: "#f8687bff" }}>
                     -{formatKRW(stats.expenseSum)}
                   </span>
                 </div>
                 <div className="flex justify-between border-t border-gray-500 pt-2 mt-2">
                   <span>남은 금액</span>
-                  <span className="font-bold" style={{ color: "#3d8eff" }}>
+                  <span className="font-bold" style={{ color: "#5696f7ff" }}>
                     {formatKRW(stats.remain)}
                   </span>
                 </div>

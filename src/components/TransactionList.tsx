@@ -129,7 +129,7 @@ export default function TransactionList() {
                           "text-xs font-semibold rounded px-2 py-0.5 " +
                           (item.type === "income"
                             ? "bg-green-100 text-green-700"
-                            : "bg-[#ed1a36]/25 text-red-700")
+                            : "bg-[#ed374f]/25 text-red-700")
                         }
                       >
                         {item.type === "income" ? "수입" : "지출"}
@@ -228,7 +228,7 @@ export default function TransactionList() {
 
                         <div className="flex gap-2 flex-wrap justify-end w-full">
                           <button
-                            className="text-xs text-white bg-[#ed1a36] hover:bg-[#d21731]  rounded px-2 py-1"
+                            className="text-xs text-white bg-[#ed374f] hover:bg-[#d21731]  rounded px-2 py-1"
                             onClick={() => saveEdit(item.id)}
                           >
                             저장
