@@ -7,11 +7,14 @@ import {
 
 import { PasswordGateProvider, usePasswordGateContext } from "./PasswordGateContext";
 import { LedgerStoreProvider } from "./LedgerStoreContext";
+import { MemoStoreProvider } from "./MemoStoreContext";
 
 import LockScreen from "./components/LockScreen";
 import AccountBookScreen from "./components/AccountBookScreen";
+import AppLayout from "./components/AppLayout";
+import MemoListScreen from "./components/MemoListScreen";
+import MemoDetailScreen from "./components/MemoDetailScreen";
 
-// /lock 전용 라우트
 function LockRoute() {
   const { ready, hasPassword, setupPassword, unlock, isUnlocked } = usePasswordGateContext();
 
@@ -23,7 +26,6 @@ function LockRoute() {
     );
   }
 
-  // 이미 잠금 풀렸으면 /app 으로 보내버림
   if (isUnlocked) {
     return <Navigate to="/app" replace />;
   }
@@ -37,7 +39,6 @@ function LockRoute() {
   );
 }
 
-// /app 전용 라우트
 function AppRoute() {
   const { ready, isUnlocked } = usePasswordGateContext();
 
@@ -49,26 +50,31 @@ function AppRoute() {
     );
   }
 
-  // 아직 언락 안 됐으면 /lock으로 돌린다.
   if (!isUnlocked) {
     return <Navigate to="/lock" replace />;
   }
 
-  // 언락된 상태면 실제 가계부 화면
-  return <AccountBookScreen />;
+  return <AppLayout />;
 }
 
 export default function App() {
   return (
     <PasswordGateProvider>
       <LedgerStoreProvider>
-        <BrowserRouter basename="/actbook">
-          <Routes>
-            <Route path="/lock" element={<LockRoute />} />
-            <Route path="/app" element={<AppRoute />} />
-            <Route path="*" element={<Navigate to="/lock" replace />} />
-          </Routes>
-        </BrowserRouter>
+        <MemoStoreProvider>
+          <BrowserRouter basename="/actbook">
+            <Routes>
+              <Route path="/lock" element={<LockRoute />} />
+              <Route path="/app" element={<AppRoute />}>
+                <Route index element={<Navigate to="/app/ledger" replace />} />
+                <Route path="ledger" element={<AccountBookScreen />} />
+                <Route path="memo" element={<MemoListScreen />} />
+                <Route path="memo/:id" element={<MemoDetailScreen />} />
+              </Route>
+              <Route path="*" element={<Navigate to="/lock" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </MemoStoreProvider>
       </LedgerStoreProvider>
     </PasswordGateProvider>
   );

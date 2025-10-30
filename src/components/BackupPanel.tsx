@@ -73,14 +73,14 @@ export default function BackupPanel() {
           onClick={handleDownload}
           className="bg-gray-800 hover:bg-black text-white text-xs font-medium rounded-lg px-3 py-2 transition-colors"
         >
-          백업 저장하기 (JSON 다운로드)
+          백업 저장하기 (JSON)
         </button>
 
         <button
           onClick={triggerUpload}
           className="bg-gray-200 hover:bg-gray-400 text-gray-800 text-xs font-medium rounded-lg px-3 py-2 transition-colors border border-gray-400"
         >
-          백업 불러오기 (JSON 업로드)
+          백업 불러오기 (JSON)
         </button>
 
         <input

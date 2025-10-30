@@ -3,7 +3,6 @@ import { useLedgerStoreContext } from "../LedgerStoreContext";
 import TransactionInputForm from "./TransactionInputForm";
 import TransactionList from "./TransactionList";
 import BackupPanel from "./BackupPanel";
-import HeaderBar from "./HeaderBar";
 
 function getMonthlyStats(items: ReturnType<typeof useLedgerStoreContext>["items"]) {
   const now = new Date();
@@ -48,44 +47,41 @@ export default function AccountBookScreen() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1a1a1a] text-gray-100">
-      <HeaderBar />
-      <main className="flex-1 p-4 flex justify-center">
-        <div className="w-full max-w-5xl flex flex-col gap-4 md:flex-row">
-          <div className="flex-1 flex flex-col gap-4">
-            <div className="bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
-              <h2 className="text-lg font-semibold mb-2">이번 달 요약</h2>
-              <div className="text-sm text-gray-200 space-y-1">
-                <div className="flex justify-between">
-                  <span>수입 합계</span>
-                  <span className="font-medium" style={{ color: "#4fc785ff" }}>
-                    {formatKRW(stats.incomeSum)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>지출 합계</span>
-                  <span className="font-medium" style={{ color: "#f15b6fff" }}>
-                    -{formatKRW(stats.expenseSum)}
-                  </span>
-                </div>
-                <div className="flex justify-between border-t border-gray-500 pt-2 mt-2">
-                  <span>남은 금액</span>
-                  <span className="font-bold" style={{ color: "#168effff" }}>
-                    {formatKRW(stats.remain)}
-                  </span>
-                </div>
+    <div className="p-4 flex justify-center">
+      <div className="w-full max-w-5xl flex flex-col gap-4 md:flex-row">
+        <div className="flex-1 flex flex-col gap-4">
+          <div className="bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
+            <h2 className="text-lg font-semibold mb-2">이번 달 요약</h2>
+            <div className="text-sm text-gray-200 space-y-1">
+              <div className="flex justify-between">
+                <span>수입 합계</span>
+                <span className="font-medium" style={{ color: "#4fc785ff" }}>
+                  {formatKRW(stats.incomeSum)}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span>지출 합계</span>
+                <span className="font-medium" style={{ color: "#f15b6fff" }}>
+                  -{formatKRW(stats.expenseSum)}
+                </span>
+              </div>
+              <div className="flex justify-between border-t border-gray-500 pt-2 mt-2">
+                <span>남은 금액</span>
+                <span className="font-bold" style={{ color: "#168effff" }}>
+                  {formatKRW(stats.remain)}
+                </span>
               </div>
             </div>
-
-            <TransactionInputForm />
-            <BackupPanel />
           </div>
 
-          <div className="flex-[2]">
-            <TransactionList />
-          </div>
+          <TransactionInputForm />
+          <BackupPanel />
         </div>
-      </main>
+
+        <div className="flex-[2]">
+          <TransactionList />
+        </div>
+      </div>
     </div>
   );
 }
