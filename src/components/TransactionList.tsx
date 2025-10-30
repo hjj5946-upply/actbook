@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { RefreshCcw } from "lucide-react";
+import { RefreshCcw, FileDown } from "lucide-react";
 import { useLedgerStoreContext } from "../LedgerStoreContext";
 import type { LedgerItem } from "../hooks/useLedgerStore";
 import { CATEGORY_OPTIONS } from "../utils/categories";
@@ -30,7 +30,6 @@ function formatDate(dateStr: string) {
 export default function TransactionList() {
   const { ready, items, removeItem, updateItem } = useLedgerStoreContext();
 
-  // 필터 초기값: 이번 달 1일 ~ 오늘
   const getInitialDateRange = () => {
     const today = new Date();
     const year = today.getFullYear();
@@ -42,7 +41,6 @@ export default function TransactionList() {
 
   const initialRange = getInitialDateRange();
 
-  // 필터 상태
   const [filterMode, setFilterMode] = useState<"range" | "month">("range");
   const [startDate, setStartDate] = useState(initialRange.start);
   const [endDate, setEndDate] = useState(initialRange.end);
@@ -50,31 +48,25 @@ export default function TransactionList() {
   const [categoryFilter, setCategoryFilter] = useState<string>("전체");
   const [typeFilter, setTypeFilter] = useState<"all" | "income" | "expense">("all");
 
-  // 수정 모드 상태
   const [editId, setEditId] = useState<string | null>(null);
   const [editAmountInput, setEditAmountInput] = useState("");
   const [editCategory, setEditCategory] = useState("");
   const [editMemo, setEditMemo] = useState("");
   const [editError, setEditError] = useState<string | null>(null);
 
-  // 필터링된 항목
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
-      // 날짜 필터
       if (filterMode === "range") {
         if (startDate && item.date < startDate) return false;
         if (endDate && item.date > endDate) return false;
       } else {
-        // month 모드
         if (monthFilter && !item.date.startsWith(monthFilter)) return false;
       }
 
-      // 카테고리 필터
       if (categoryFilter !== "전체" && item.category !== categoryFilter) {
         return false;
       }
 
-      // 구분 필터
       if (typeFilter !== "all" && item.type !== typeFilter) {
         return false;
       }
@@ -83,7 +75,6 @@ export default function TransactionList() {
     });
   }, [items, filterMode, startDate, endDate, monthFilter, categoryFilter, typeFilter]);
 
-  // 필터 초기화
   function resetFilters() {
     const initial = getInitialDateRange();
     setFilterMode("range");
@@ -93,6 +84,98 @@ export default function TransactionList() {
     setCategoryFilter("전체");
     setTypeFilter("all");
   }
+
+  // 엑셀 다운로드
+  async function downloadExcel() {
+  const ExcelJS = (await import("exceljs")).default;
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("거래내역");
+
+  // 컬럼 정의 (너비 및 헤더)
+  worksheet.columns = [
+    { header: "날짜", key: "date", width: 12 },
+    { header: "구분", key: "type", width: 8 },
+    { header: "카테고리", key: "category", width: 12 },
+    { header: "메모", key: "memo", width: 35 },
+    { header: "금액", key: "amount", width: 15 },
+  ];
+
+  // 헤더 스타일 적용
+  worksheet.getRow(1).eachCell((cell) => {
+    cell.font = { bold: true, color: { argb: "FF000000" } };
+    cell.fill = {
+      type: "pattern",
+      pattern: "solid",
+      fgColor: { argb: "FFFFFFFF" }, 
+    };
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    cell.border = {
+      top: { style: "thin", color: { argb: "FF000000" } },
+      left: { style: "thin", color: { argb: "FF000000" } },
+      bottom: { style: "thin", color: { argb: "FF000000" } },
+      right: { style: "thin", color: { argb: "FF000000" } },
+    };
+  });
+
+  // 데이터 추가
+  filteredItems.forEach((item) => {
+    worksheet.addRow({
+      date: item.date,
+      type: item.type === "income" ? "수입" : "지출",
+      category: item.category,
+      memo: item.memo || "-",
+      amount: item.amount,
+    });
+  });
+
+  // 데이터 셀 스타일 적용 (2번째 행부터)
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber === 1) return; 
+
+    row.eachCell((cell, colNumber) => {
+
+      cell.border = {
+        top: { style: "thin", color: { argb: "FFCCCCCC" } },
+        left: { style: "thin", color: { argb: "FFCCCCCC" } },
+        bottom: { style: "thin", color: { argb: "FFCCCCCC" } },
+        right: { style: "thin", color: { argb: "FFCCCCCC" } },
+      };
+
+      if (colNumber === 1) {
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+      } else if (colNumber === 2) {
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+      } else if (colNumber === 3) {
+        cell.alignment = { horizontal: "center", vertical: "middle" };
+      } else if (colNumber === 4) {
+        cell.alignment = { horizontal: "left", vertical: "middle" };
+      } else if (colNumber === 5) {
+        cell.alignment = { horizontal: "right", vertical: "middle" };
+        cell.numFmt = "#,##0";
+      }
+    });
+  });
+
+  const now = new Date();
+  const yyyy = now.getFullYear();
+  const mm = String(now.getMonth() + 1).padStart(2, "0");
+  const dd = String(now.getDate()).padStart(2, "0");
+  const HH = String(now.getHours()).padStart(2, "0");
+  const MM = String(now.getMinutes()).padStart(2, "0");
+  const filename = `거래내역_${yyyy}${mm}${dd}_${HH}${MM}.xlsx`;
+
+  const buffer = await workbook.xlsx.writeBuffer();
+  const blob = new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
   if (!ready) {
     return (
@@ -157,8 +240,16 @@ export default function TransactionList() {
   return (
     <div className="bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow shadow flex flex-col h-full">
       {/* 헤더 영역 */}
-      <div className="border-b border-gray-400 flex-shrink-0">
-        <h2 className="text-lg font-semibold mb-3">거래 내역</h2>
+      <div className="border-b border-gray-400 flex-shrink-0 flex items-center justify-between mt-3">
+        <h2 className="text-lg font-semibold pb-4">거래 내역</h2>
+        <button
+          onClick={downloadExcel}
+          className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded bg-transparent border-2 border-green-600 hover:border-green-700 text-green-600 hover:text-green-700 transition-colors mb-3"
+          aria-label="엑셀 다운"
+        >
+          <FileDown className="w-4 h-4" />
+          <span>EXCEL</span>
+        </button>
       </div>
 
       {/* 필터 영역 */}
