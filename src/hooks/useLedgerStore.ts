@@ -4,7 +4,7 @@ const STORAGE_KEY = "ledger_items";
 
 export type LedgerItem = {
   id: string;
-  date: string; // "2025-10-28"
+  date: string;
   type: "income" | "expense";
   category: string;
   memo: string;

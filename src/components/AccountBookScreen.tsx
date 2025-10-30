@@ -64,13 +64,13 @@ export default function AccountBookScreen() {
                 </div>
                 <div className="flex justify-between">
                   <span>지출 합계</span>
-                  <span className="font-medium" style={{ color: "#f8687bff" }}>
+                  <span className="font-medium" style={{ color: "#f15b6fff" }}>
                     -{formatKRW(stats.expenseSum)}
                   </span>
                 </div>
                 <div className="flex justify-between border-t border-gray-500 pt-2 mt-2">
                   <span>남은 금액</span>
-                  <span className="font-bold" style={{ color: "#5696f7ff" }}>
+                  <span className="font-bold" style={{ color: "#168effff" }}>
                     {formatKRW(stats.remain)}
                   </span>
                 </div>

@@ -111,7 +111,7 @@ export default function TransactionInputForm() {
           </label>
           <input
             type="date"
-            className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-700 rounded-lg bg-[#1e1e1e] text-gray-100 px-3 py-2 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
@@ -123,7 +123,7 @@ export default function TransactionInputForm() {
             구분
           </label>
           <select
-            className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-red-200"
+            className="w-full border border-gray-700 rounded-lg bg-[#1e1e1e] text-gray-100 px-3 py-2 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent"
             value={type}
             onChange={(e) =>
               setType(e.target.value === "income" ? "income" : "expense")
@@ -142,7 +142,7 @@ export default function TransactionInputForm() {
           <input
             type="text"
             inputMode="numeric"
-            className="w-full border rounded-lg px-3 py-2 text-right font-semibold outline-none focus:ring-2 focus:ring-red-200"
+            className="w-full border border-gray-700 rounded-lg bg-[#1e1e1e] text-gray-100 px-3 py-2 text-right font-semibold outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent"
             value={amountInput}
             onChange={handleAmountChange}
             placeholder="예: 100,000"
@@ -155,7 +155,7 @@ export default function TransactionInputForm() {
             카테고리
           </label>
           <select
-            className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-red-200"
+            className="w-full border border-gray-700 rounded-lg bg-[#1e1e1e] text-gray-100 px-3 py-2 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
@@ -174,7 +174,7 @@ export default function TransactionInputForm() {
           </label>
           <input
             type="text"
-            className="w-full border rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-red-200"
+            className="w-full border border-gray-700 rounded-lg bg-[#1e1e1e] text-gray-100 px-3 py-2 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent"
             value={memo}
             onChange={handleMemoChange}
             placeholder="예: OOO 구매"
