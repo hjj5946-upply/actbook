@@ -1,159 +1,203 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Save, Trash2 } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { ArrowLeft, Trash2, Save } from "lucide-react";
 import { useMemoStoreContext } from "../MemoStoreContext";
+import type { MemoItem } from "../hooks/useMemoStore";
 
 export default function MemoDetailScreen() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { items, addItem, updateItem, removeItem } = useMemoStoreContext();
+  const location = useLocation();
+  const { items, updateMemo, deleteMemo } = useMemoStoreContext();
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [message, setMessage] = useState<string | null>(null);
+  const [currentMemo, setCurrentMemo] = useState<MemoItem | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [saveMessage, setSaveMessage] = useState<string | null>(null);
 
-  const isNew = id === "new";
-  const currentMemo = !isNew ? items.find((m) => m.id === id) : null;
-
-  // 기존 메모 로드
+  // 메모 로드
   useEffect(() => {
-    if (currentMemo) {
-      setTitle(currentMemo.title);
-      setContent(currentMemo.content);
+    if (location.state?.memo) {
+      setCurrentMemo(location.state.memo);
+      setContent(location.state.memo.content);
+    } else if (id) {
+      const found = items.find((m) => m.id === id);
+      if (found) {
+        setCurrentMemo(found);
+        setContent(found.content);
+      } else {
+        navigate("/app/memo", { replace: true });
+      }
+    }
+  }, [id, location.state, items, navigate]);
+
+  // 자동 포커스
+  useEffect(() => {
+    if (textareaRef.current && currentMemo) {
+      textareaRef.current.focus();
+      const length = content.length;
+      textareaRef.current.setSelectionRange(length, length);
     }
   }, [currentMemo]);
 
-  // 존재하지 않는 메모
+  // 변경 감지
   useEffect(() => {
-    if (!isNew && !currentMemo && items.length > 0) {
-      navigate("/app/memo");
+    if (currentMemo && content !== currentMemo.content) {
+      setHasChanges(true);
+    } else {
+      setHasChanges(false);
     }
-  }, [isNew, currentMemo, items, navigate]);
+  }, [content, currentMemo]);
+
+  // 빈 메모 자동 삭제 (unmount 시)
+  useEffect(() => {
+    return () => {
+      if (id && content.trim() === "" && !hasChanges) {
+        deleteMemo(id);
+      }
+    };
+  }, []);
 
   function handleSave() {
-    if (!title.trim()) {
-      setMessage("제목을 입력하세요.");
+    if (!id || !currentMemo) return;
+
+    if (content.trim() === "") {
+      if (confirm("내용이 비어있습니다. 메모를 삭제하시겠습니까?")) {
+        deleteMemo(id);
+        navigate("/app/memo");
+      }
       return;
     }
 
-    if (isNew) {
-      addItem({ title: title.trim(), content: content.trim() });
-      setMessage("메모가 저장되었습니다.");
-      setTimeout(() => navigate("/app/memo"), 1000);
-    } else if (currentMemo) {
-      updateItem(currentMemo.id, {
-        title: title.trim(),
-        content: content.trim(),
-      });
-      setMessage("메모가 수정되었습니다.");
+    updateMemo(id, content);
+    setHasChanges(false);
+    setSaveMessage("저장되었습니다");
+    setTimeout(() => setSaveMessage(null), 2000);
+  }
+
+  function handleBack() {
+    if (hasChanges) {
+      if (confirm("저장하지 않은 내용이 있습니다. 나가시겠습니까?")) {
+        if (content.trim() === "") {
+          deleteMemo(id!);
+        }
+        navigate("/app/memo");
+      }
+    } else {
+      if (content.trim() === "") {
+        deleteMemo(id!);
+      }
+      navigate("/app/memo");
     }
   }
 
   function handleDelete() {
-    if (!currentMemo) return;
-    
+    if (!id) return;
+
     if (confirm("정말 삭제하시겠습니까?")) {
-      removeItem(currentMemo.id);
+      deleteMemo(id);
       navigate("/app/memo");
     }
   }
 
-  function handleBack() {
-    if (title.trim() || content.trim()) {
-      if (confirm("저장하지 않은 내용이 있습니다. 나가시겠습니까?")) {
-        navigate("/app/memo");
-      }
-    } else {
-      navigate("/app/memo");
+  function handleContentChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setContent(e.target.value);
+  }
+
+  // 텍스트 영역 자동 높이 조절
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
     }
+  }, [content]);
+
+  if (!currentMemo) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-gray-500">
+        메모를 불러오는 중...
+      </div>
+    );
   }
 
   return (
-    <div className="p-4 flex justify-center">
-      <div className="w-full max-w-4xl">
-        {/* 헤더 */}
-        <div className="flex items-center justify-between mb-4">
+    <div className="min-h-screen bg-[#1a1a1a] text-gray-100">
+      {/* 헤더 */}
+      <div className="sticky top-0 bg-[#1a1a1a] border-b border-gray-700 z-10">
+        <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
           <button
+            type="button"
             onClick={handleBack}
             className="flex items-center gap-2 text-gray-300 hover:text-[#ed374f] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span>목록으로</span>
           </button>
 
-          <div className="flex gap-2">
-            {!isNew && (
-              <button
-                onClick={handleDelete}
-                className="flex items-center gap-1.5 text-xs px-3 py-2 rounded bg-transparent border-2 border-red-500 hover:border-red-700 text-red-500 hover:text-red-700 transition-colors"
-              >
-                <Trash2 className="w-4 h-4" />
-                <span>삭제</span>
-              </button>
-            )}
+          <div className="flex items-center gap-2">
+            {/* 저장 버튼 */}
             <button
+              type="button"
               onClick={handleSave}
-              className="flex items-center gap-1.5 text-xs px-3 py-2 rounded bg-[#ed374f] hover:bg-[#d21731] text-white transition-colors"
+              disabled={!hasChanges}
+              className={`flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg transition-colors ${
+                hasChanges
+                  ? "bg-[#ed374f] hover:bg-[#d21731] text-white"
+                  : "bg-gray-700 text-gray-500 cursor-not-allowed"
+              }`}
             >
               <Save className="w-4 h-4" />
               <span>저장</span>
             </button>
-          </div>
-        </div>
 
-        {message && (
-          <div className="mb-4 p-3 bg-gray-700 rounded text-sm text-gray-200">
-            {message}
+            {/* 삭제 버튼 */}
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="flex items-center gap-1.5 text-xs px-3 py-2 rounded-lg bg-transparent border-2 border-red-500 hover:border-red-700 text-red-500 hover:text-red-700 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>삭제</span>
+            </button>
           </div>
-        )}
-
-        {/* 메모 입력 영역 */}
-        <div className="bg-[#2b2b2b]/95 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 space-y-4">
-          {/* 제목 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              제목
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="메모 제목을 입력하세요"
-              className="w-full border border-gray-700 bg-[#1e1e1e] rounded-lg px-4 py-3 text-gray-100 placeholder-gray-500 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent transition"
-              maxLength={100}
-            />
-            <div className="text-xs text-gray-500 mt-1 text-right">
-              {title.length}/100
-            </div>
-          </div>
-
-          {/* 내용 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              내용
-            </label>
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="메모 내용을 입력하세요"
-              className="w-full border border-gray-700 bg-[#1e1e1e] rounded-lg px-4 py-3 text-gray-100 placeholder-gray-500 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent transition resize-none"
-              rows={15}
-              maxLength={5000}
-            />
-            <div className="text-xs text-gray-500 mt-1 text-right">
-              {content.length}/5000
-            </div>
-          </div>
-
-          {/* 메타 정보 */}
-          {currentMemo && (
-            <div className="pt-4 border-t border-gray-700 text-xs text-gray-500 space-y-1">
-              <div>작성일: {new Date(currentMemo.createdAt).toLocaleString("ko-KR")}</div>
-              <div>수정일: {new Date(currentMemo.updatedAt).toLocaleString("ko-KR")}</div>
-            </div>
-          )}
         </div>
       </div>
+
+      {/* 저장 메시지 */}
+      {saveMessage && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+          {saveMessage}
+        </div>
+      )}
+
+      {/* 메모 에디터 */}
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        <textarea
+          ref={textareaRef}
+          value={content}
+          onChange={handleContentChange}
+          placeholder="메모를 입력하세요&#10;첫 줄이 제목이 됩니다"
+          className="w-full bg-transparent text-gray-100 placeholder-gray-600 outline-none resize-none text-base leading-relaxed"
+          style={{
+            minHeight: "calc(100vh - 200px)",
+            fontFamily: "inherit",
+          }}
+        />
+
+        {/* 메타 정보 */}
+        <div className="mt-8 pt-4 border-t border-gray-700 text-xs text-gray-500 space-y-1">
+          <div>작성: {new Date(currentMemo.createdAt).toLocaleString("ko-KR")}</div>
+          <div>수정: {new Date(currentMemo.updatedAt).toLocaleString("ko-KR")}</div>
+          <div>글자 수: {content.length.toLocaleString()}</div>
+        </div>
+      </div>
+
+      {/* 변경사항 표시 */}
+      {hasChanges && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 text-xs text-yellow-500">
+          저장되지 않은 변경사항이 있습니다
+        </div>
+      )}
     </div>
   );
 }

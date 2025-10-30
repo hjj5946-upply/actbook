@@ -4,7 +4,6 @@ const STORAGE_KEY = "memo_items";
 
 export type MemoItem = {
   id: string;
-  title: string;
   content: string;
   createdAt: string;
   updatedAt: string;
@@ -23,7 +22,7 @@ export function useMemoStore() {
           setItems(parsed);
         }
       } catch (e) {
-        console.warn("memo_items parse 실패, 초기화합니다.", e);
+        console.warn("memo_items parse 실패", e);
       }
     }
     setReady(true);
@@ -34,28 +33,27 @@ export function useMemoStore() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   }
 
-  function addItem(data: Omit<MemoItem, "id" | "createdAt" | "updatedAt">) {
+  function createMemo(): MemoItem {
     const now = new Date().toISOString();
     const newItem: MemoItem = {
       id: crypto.randomUUID(),
-      ...data,
+      content: "",
       createdAt: now,
       updatedAt: now,
     };
     const next = [newItem, ...items];
     persist(next);
+    return newItem; // 객체 자체를 반환
   }
 
-  function updateItem(id: string, patch: Partial<Omit<MemoItem, "id" | "createdAt">>) {
+  function updateMemo(id: string, content: string) {
     const next = items.map((it) =>
-      it.id === id
-        ? { ...it, ...patch, updatedAt: new Date().toISOString() }
-        : it
+      it.id === id ? { ...it, content, updatedAt: new Date().toISOString() } : it
     );
     persist(next);
   }
 
-  function removeItem(id: string) {
+  function deleteMemo(id: string) {
     const next = items.filter((it) => it.id !== id);
     persist(next);
   }
@@ -66,7 +64,7 @@ export function useMemoStore() {
 
   function importData(rawItems: unknown): { ok: boolean; message?: string } {
     if (!Array.isArray(rawItems)) {
-      return { ok: false, message: "형식이 올바르지 않습니다. (배열 아님)" };
+      return { ok: false, message: "형식이 올바르지 않습니다." };
     }
 
     for (const it of rawItems) {
@@ -74,7 +72,6 @@ export function useMemoStore() {
         typeof it !== "object" ||
         it === null ||
         typeof (it as any).id !== "string" ||
-        typeof (it as any).title !== "string" ||
         typeof (it as any).content !== "string"
       ) {
         return { ok: false, message: "데이터 구조가 맞지 않습니다." };
@@ -88,9 +85,9 @@ export function useMemoStore() {
   return {
     ready,
     items,
-    addItem,
-    updateItem,
-    removeItem,
+    createMemo,
+    updateMemo,
+    deleteMemo,
     exportData,
     importData,
   };

@@ -1,15 +1,17 @@
-import { useState } from "react";
 import { Plus, Trash2, FileDown, Upload } from "lucide-react";
 import { useMemoStoreContext } from "../MemoStoreContext";
 import { useNavigate } from "react-router-dom";
+import { getTitleFromContent, getPreviewFromContent, formatDate } from "../utils/memoUtils";
+import { useState } from "react";
 
 export default function MemoListScreen() {
-  const { ready, items, removeItem, exportData, importData } = useMemoStoreContext();
+  const { ready, items, createMemo, deleteMemo, exportData, importData } = useMemoStoreContext();
   const navigate = useNavigate();
   const [message, setMessage] = useState<string | null>(null);
 
   function handleCreateNew() {
-    navigate("/app/memo/new");
+    const newMemo = createMemo();
+    navigate(`/app/memo/${newMemo.id}`, { state: { memo: newMemo } });
   }
 
   function handleMemoClick(id: string) {
@@ -17,13 +19,19 @@ export default function MemoListScreen() {
   }
 
   function handleDelete(id: string, e: React.MouseEvent) {
-    e.stopPropagation(); // 메모 클릭 이벤트 방지
+    e.stopPropagation();
     if (confirm("정말 삭제하시겠습니까?")) {
-      removeItem(id);
+      deleteMemo(id);
     }
   }
 
   function handleExport() {
+    if (items.length === 0) {
+      setMessage("내보낼 메모가 없습니다.");
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
+
     const jsonStr = exportData();
     const blob = new Blob([jsonStr], { type: "application/json" });
     const now = new Date();
@@ -42,6 +50,7 @@ export default function MemoListScreen() {
     a.click();
     URL.revokeObjectURL(url);
     setMessage("백업 파일을 내려받았습니다.");
+    setTimeout(() => setMessage(null), 3000);
   }
 
   async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
@@ -62,6 +71,7 @@ export default function MemoListScreen() {
       setMessage("JSON 파싱 실패");
     } finally {
       e.target.value = "";
+      setTimeout(() => setMessage(null), 3000);
     }
   }
 
@@ -81,6 +91,7 @@ export default function MemoListScreen() {
           <h1 className="text-2xl font-bold">메모장</h1>
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={handleExport}
               className="flex items-center gap-1.5 text-xs px-3 py-2 rounded bg-transparent border-2 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700 transition-colors"
             >
@@ -101,48 +112,64 @@ export default function MemoListScreen() {
           </div>
         )}
 
-        {/* 새 메모 버튼 */}
-        <button
-          onClick={handleCreateNew}
-          className="w-full mb-4 flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-[#ed374f] hover:bg-[#d21731] text-white transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          <span>새 메모 작성</span>
-        </button>
-
         {/* 메모 리스트 */}
         {items.length === 0 ? (
           <div className="text-center text-gray-400 py-12">
-            아직 메모가 없습니다. 새 메모를 작성해보세요!
+            <p className="mb-4">아직 메모가 없습니다.</p>
+            <button
+              type="button"
+              onClick={handleCreateNew}
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#ed374f] hover:bg-[#d21731] text-white transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              <span>첫 메모 작성하기</span>
+            </button>
           </div>
         ) : (
-          <div className="space-y-2">
-            {items.map((memo) => (
-              <div
-                key={memo.id}
-                onClick={() => handleMemoClick(memo.id)}
-                className="bg-[#2b2b2b]/95 rounded-xl p-4 cursor-pointer hover:shadow-[0_0_10px_rgba(237,55,79,0.3)] transition-shadow flex items-center justify-between group"
-              >
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-gray-100 truncate">
-                    {memo.title || "제목 없음"}
-                  </h3>
-                  <p className="text-sm text-gray-400 truncate">
-                    {memo.content || "내용 없음"}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date(memo.updatedAt).toLocaleString("ko-KR")}
-                  </p>
-                </div>
-                <button
-                  onClick={(e) => handleDelete(memo.id, e)}
-                  className="ml-4 p-2 text-red-500 hover:text-red-700 hover:bg-red-100/10 rounded transition-colors opacity-0 group-hover:opacity-100"
-                >
-                  <Trash2 className="w-5 h-5" />
-                </button>
-              </div>
-            ))}
-          </div>
+          <>
+            <div className="space-y-2">
+              {items.map((memo) => {
+                const title = getTitleFromContent(memo.content);
+                const preview = getPreviewFromContent(memo.content);
+
+                return (
+                  <div
+                    key={memo.id}
+                    onClick={() => handleMemoClick(memo.id)}
+                    className="bg-[#2b2b2b]/95 rounded-xl p-4 cursor-pointer hover:shadow-[0_0_10px_rgba(237,55,79,0.3)] transition-shadow flex items-start justify-between group"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-bold text-gray-100 truncate mb-1">
+                        {title}
+                      </h3>
+                      <p className="text-sm text-gray-400 line-clamp-2 mb-2">
+                        {preview}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {formatDate(memo.updatedAt)}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => handleDelete(memo.id, e)}
+                      className="ml-4 p-2 text-red-500 hover:text-red-700 hover:bg-red-100/10 rounded transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Floating Action Button */}
+            <button
+              type="button"
+              onClick={handleCreateNew}
+              className="fixed bottom-8 right-8 w-14 h-14 rounded-full bg-[#ed374f] hover:bg-[#d21731] text-white shadow-lg hover:shadow-xl transition-all flex items-center justify-center z-50"
+            >
+              <Plus className="w-6 h-6" />
+            </button>
+          </>
         )}
       </div>
     </div>
