@@ -40,7 +40,6 @@ export default function MemoListScreen() {
     const dd = String(now.getDate()).padStart(2, "0");
     const HH = String(now.getHours()).padStart(2, "0");
     const MM = String(now.getMinutes()).padStart(2, "0");
-    const SS = String(now.getSeconds()).padStart(2, "0");
     const filename = `memo-backup-${yyyy}${mm}${dd}-${HH}${MM}.json`;
 
     const url = URL.createObjectURL(blob);
