@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import { useLedgerStoreContext } from "../LedgerStoreContext";
+import { FileDown, Upload } from "lucide-react";
 
 export default function BackupPanel() {
   const { exportData, importData } = useLedgerStoreContext();
@@ -66,41 +67,39 @@ export default function BackupPanel() {
 
   return (
     <div className="bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
-      <h2 className="text-lg font-semibold mb-2">백업 / 복원</h2>
+  <h2 className="text-lg font-semibold mb-4">백업 / 복원</h2>
 
-      <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
-        <button
-          onClick={handleDownload}
-          className="bg-gray-800 hover:bg-black text-white text-xs font-medium rounded-lg px-3 py-2 transition-colors"
-        >
-          백업 저장하기 (JSON)
-        </button>
+  <div className="flex flex-col sm:flex-row gap-2 mb-4">
+    <button
+      type="button"
+      onClick={handleDownload}
+      className="flex items-center justify-center gap-1.5 text-xs px-3 py-2 rounded bg-transparent border-2 border-gray-400 hover:border-gray-300 text-gray-300 hover:text-gray-100 transition-colors flex-1 sm:flex-initial sm:min-w-[140px]"
+    >
+      <FileDown className="w-4 h-4" />
+      <span>내보내기</span>
+    </button>
 
-        <button
-          onClick={triggerUpload}
-          className="bg-gray-200 hover:bg-gray-400 text-gray-800 text-xs font-medium rounded-lg px-3 py-2 transition-colors border border-gray-400"
-        >
-          백업 불러오기 (JSON)
-        </button>
+    <label className="flex items-center justify-center gap-1.5 text-xs px-3 py-2 rounded bg-transparent border-2 border-gray-400 hover:border-gray-300 text-gray-300 hover:text-gray-100 transition-colors cursor-pointer flex-1 sm:flex-initial sm:min-w-[140px]">
+      <Upload className="w-4 h-4" />
+      <span>불러오기</span>
+      <input
+        type="file"
+        accept=".json"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+    </label>
+  </div>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="application/json"
-          className="hidden"
-          onChange={handleFileChange}
-        />
-      </div>
+  {message && (
+    <p className="text-[11px] text-green-500 mb-3">{message}</p>
+  )}
 
-      {message && (
-        <p className="text-[11px] text-gray-500 mt-3">{message}</p>
-      )}
-
-      <p className="text-[11px] text-gray-300 mt-2 leading-relaxed">
-        "백업 저장하기"로 받은 .json 파일만 있으면
-        다른 PC나 브라우저에서도 "백업 불러오기"로 그대로 복구할 수 있습니다.
-        (주의: 복원 시 현재 기록은 덮어쓰기됩니다.)
-      </p>
-    </div>
+  <p className="text-[11px] text-gray-400 leading-relaxed">
+    "내보내기"로 받은 .json 파일만 있으면
+    다른 PC나 브라우저에서도 "불러오기"로 그대로 복구할 수 있습니다.
+    (주의: 복원 시 현재 기록은 덮어쓰기됩니다.)
+  </p>
+</div>
   );
 }

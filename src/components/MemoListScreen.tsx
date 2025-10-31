@@ -41,7 +41,7 @@ export default function MemoListScreen() {
     const HH = String(now.getHours()).padStart(2, "0");
     const MM = String(now.getMinutes()).padStart(2, "0");
     const SS = String(now.getSeconds()).padStart(2, "0");
-    const filename = `memo-backup-${yyyy}${mm}${dd}-${HH}${MM}${SS}.json`;
+    const filename = `memo-backup-${yyyy}${mm}${dd}-${HH}${MM}.json`;
 
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -93,12 +93,12 @@ export default function MemoListScreen() {
             <button
               type="button"
               onClick={handleExport}
-              className="flex items-center gap-1.5 text-xs px-3 py-2 rounded bg-transparent border-2 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700 transition-colors"
+              className="flex items-center gap-1.5 text-xs px-3 py-2 rounded bg-transparent border-2 border-gray-400 hover:border-gray-300 text-gray-300 hover:text-gray-100 transition-colors"
             >
               <FileDown className="w-4 h-4" />
               <span>내보내기</span>
             </button>
-            <label className="flex items-center gap-1.5 text-xs px-3 py-2 rounded bg-transparent border-2 border-blue-600 hover:border-blue-700 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer">
+            <label className="flex items-center gap-1.5 text-xs px-3 py-2 rounded bg-transparent border-2 border-gray-400 hover:border-gray-300 text-gray-300 hover:text-gray-100 transition-colors cursor-pointer">
               <Upload className="w-4 h-4" />
               <span>불러오기</span>
               <input type="file" accept=".json" className="hidden" onChange={handleImport} />
@@ -152,7 +152,7 @@ export default function MemoListScreen() {
                     <button
                       type="button"
                       onClick={(e) => handleDelete(memo.id, e)}
-                      className="ml-4 p-2 text-red-500 hover:text-red-700 hover:bg-red-100/10 rounded transition-colors opacity-0 group-hover:opacity-100"
+                      className="ml-4 p-2 text-red-500 hover:text-red-700 hover:bg-red-100/10 rounded transition-colors"
                     >
                       <Trash2 className="w-5 h-5" />
                     </button>

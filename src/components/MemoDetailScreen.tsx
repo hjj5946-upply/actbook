@@ -14,32 +14,36 @@ export default function MemoDetailScreen() {
   const [content, setContent] = useState("");
   const [currentMemo, setCurrentMemo] = useState<MemoItem | null>(null);
   const [hasChanges, setHasChanges] = useState(false);
-  const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false); // 👈 추가
 
-  // 메모 로드
+  // 메모 로드 (한 번만)
   useEffect(() => {
+    if (isInitialized) return; // 👈 이미 초기화되었으면 스킵
+
     if (location.state?.memo) {
       setCurrentMemo(location.state.memo);
       setContent(location.state.memo.content);
+      setIsInitialized(true);
     } else if (id) {
       const found = items.find((m) => m.id === id);
       if (found) {
         setCurrentMemo(found);
         setContent(found.content);
+        setIsInitialized(true);
       } else {
         navigate("/app/memo", { replace: true });
       }
     }
-  }, [id, location.state, items, navigate]);
+  }, [id, location.state, items, navigate, isInitialized]);
 
   // 자동 포커스
   useEffect(() => {
-    if (textareaRef.current && currentMemo) {
+    if (textareaRef.current && currentMemo && isInitialized) {
       textareaRef.current.focus();
       const length = content.length;
       textareaRef.current.setSelectionRange(length, length);
     }
-  }, [currentMemo]);
+  }, [currentMemo, isInitialized]);
 
   // 변경 감지
   useEffect(() => {
@@ -50,31 +54,21 @@ export default function MemoDetailScreen() {
     }
   }, [content, currentMemo]);
 
-  // 빈 메모 자동 삭제 (unmount 시)
-  useEffect(() => {
-    return () => {
-      if (id && content.trim() === "" && !hasChanges) {
-        deleteMemo(id);
-      }
-    };
-  }, []);
-
   function handleSave() {
-    if (!id || !currentMemo) return;
+  if (!id || !currentMemo) return;
 
-    if (content.trim() === "") {
-      if (confirm("내용이 비어있습니다. 메모를 삭제하시겠습니까?")) {
-        deleteMemo(id);
-        navigate("/app/memo");
-      }
-      return;
+  if (content.trim() === "") {
+    if (confirm("내용이 비어있습니다. 메모를 삭제하시겠습니까?")) {
+      deleteMemo(id);
+      navigate("/app/memo");
     }
-
-    updateMemo(id, content);
-    setHasChanges(false);
-    setSaveMessage("저장되었습니다");
-    setTimeout(() => setSaveMessage(null), 2000);
+    return;
   }
+
+  updateMemo(id, content);
+  
+  navigate("/app/memo");
+}
 
   function handleBack() {
     if (hasChanges) {
@@ -162,13 +156,6 @@ export default function MemoDetailScreen() {
           </div>
         </div>
       </div>
-
-      {/* 저장 메시지 */}
-      {saveMessage && (
-        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50">
-          {saveMessage}
-        </div>
-      )}
 
       {/* 메모 에디터 */}
       <div className="max-w-4xl mx-auto px-4 py-6">
