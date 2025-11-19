@@ -1,8 +1,18 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { RefreshCcw, FileDown } from "lucide-react";
 import { useLedgerStoreContext } from "../LedgerStoreContext";
 import type { LedgerItem } from "../hooks/useLedgerStore";
 import { CATEGORY_OPTIONS } from "../utils/categories";
+
+type SummaryStats = {
+  incomeSum: number;
+  expenseSum: number;
+  remain: number;
+};
+
+type TransactionListProps = {
+  onSummaryChange?: (stats: SummaryStats) => void;
+};
 
 function onlyDigits(v: string) {
   return v.replace(/[^0-9]/g, "");
@@ -27,7 +37,7 @@ function formatDate(dateStr: string) {
   return dateStr;
 }
 
-export default function TransactionList() {
+export default function TransactionList({ onSummaryChange }: TransactionListProps) {
   const { ready, items, removeItem, updateItem } = useLedgerStoreContext();
 
   const getInitialDateRange = () => {
@@ -75,6 +85,33 @@ export default function TransactionList() {
     });
   }, [items, filterMode, startDate, endDate, monthFilter, categoryFilter, typeFilter]);
 
+  // 🔥 필터 결과 기준 요약 계산
+  const summaryStats: SummaryStats = useMemo(() => {
+    let incomeSum = 0;
+    let expenseSum = 0;
+
+    for (const it of filteredItems) {
+      if (it.type === "income") {
+        incomeSum += it.amount;
+      } else {
+        expenseSum += it.amount;
+      }
+    }
+
+    return {
+      incomeSum,
+      expenseSum,
+      remain: incomeSum - expenseSum,
+    };
+  }, [filteredItems]);
+
+  // 🔥 부모에게 요약 전달
+  useEffect(() => {
+    if (onSummaryChange) {
+      onSummaryChange(summaryStats);
+    }
+  }, [summaryStats, onSummaryChange]);
+  
   function resetFilters() {
     const initial = getInitialDateRange();
     setFilterMode("range");

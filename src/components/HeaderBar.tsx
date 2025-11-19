@@ -125,22 +125,22 @@ export default function HeaderBar() {
                     : "text-gray-200 hover:bg-gray-700"
                 }`}
               >
-                메모장
+                메모장(개발중)
               </Link>
 
-              <button
+              {/* <button
                 className="px-4 py-3 rounded-lg text-sm font-medium text-gray-500 text-left cursor-not-allowed"
                 disabled
               >
                 개발중
-              </button>
+              </button> */}
               
               {currentUser && (
                 <div className="text-gray-300 text-sm px-4 mb-2">
                   {currentUser.nickname} 님
                 </div>
               )}
-              
+
               {/* 🔥 모바일 슬라이드 메뉴 아래쪽에 로그아웃 추가 */}
               <button
                 onClick={() => {
