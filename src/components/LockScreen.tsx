@@ -52,11 +52,26 @@ export default function LockScreen({
     }
   }
 
+  function switchMode(nextMode: "login" | "register") {
+    setMode(nextMode);
+    setError(null);
+    setPw("");
+    setPw2("");
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a] text-gray-100 px-4">
-      <div className="w-full max-w-sm bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
+    <div className="min-h-screen flex items-center justify-center px-4
+                    bg-gray-100 text-gray-900
+                    dark:bg-[#1a1a1a] dark:text-gray-100">
+      <div className="w-full max-w-sm
+                      bg-white text-gray-900
+                      dark:bg-[#2b2b2b]/95 dark:text-gray-100
+                      rounded-xl
+                      shadow-[0_0_12px_rgba(0,0,0,0.18)]
+                      dark:shadow-[0_0_3px_rgba(255,255,255,0.35)]
+                      p-6 backdrop-blur-md transition-shadow">
         {/* 아이콘 */}
-        <h1 className="flex items-center justify-center mb-4">
+        <h1 className="flex items-center justify-center mb-3">
           {mode === "login" ? (
             <LockKeyholeOpen className="w-9 h-9 text-[#ed374f]" />
           ) : (
@@ -64,33 +79,37 @@ export default function LockScreen({
           )}
         </h1>
 
+        {/* 제목 / 설명 */}
+        <div className="text-center mb-4">
+          <div className="text-base font-semibold mb-1">
+            {mode === "login" ? "가계부 잠금 해제" : "가계부 계정 만들기"}
+          </div>
+          <div className="text-[11px] text-gray-500 dark:text-gray-400">
+            닉네임과 숫자 8자리 비밀번호로 접속합니다.
+          </div>
+        </div>
+
         {/* 탭: 로그인 / 회원가입 */}
-        <div className="flex mb-4 text-sm border-b border-gray-700">
+        <div className="flex mb-4 text-sm border-b border-gray-200 dark:border-gray-700">
           <button
             type="button"
-            className={`flex-1 py-2 text-center ${
+            className={`flex-1 py-2 text-center transition-colors ${
               mode === "login"
                 ? "text-[#ed374f] border-b-2 border-[#ed374f]"
-                : "text-gray-400"
+                : "text-gray-500 dark:text-gray-400"
             }`}
-            onClick={() => {
-              setMode("login");
-              setError(null);
-            }}
+            onClick={() => switchMode("login")}
           >
             로그인
           </button>
           <button
             type="button"
-            className={`flex-1 py-2 text-center ${
+            className={`flex-1 py-2 text-center transition-colors ${
               mode === "register"
                 ? "text-[#ed374f] border-b-2 border-[#ed374f]"
-                : "text-gray-400"
+                : "text-gray-500 dark:text-gray-400"
             }`}
-            onClick={() => {
-              setMode("register");
-              setError(null);
-            }}
+            onClick={() => switchMode("register")}
           >
             회원가입
           </button>
@@ -99,12 +118,15 @@ export default function LockScreen({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* 닉네임 */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               닉네임
             </label>
             <input
               type="text"
-              className="w-full border border-gray-600 bg-[#1e1e1e] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-[#ed374f] transition"
+              className="w-full border rounded-lg px-3 py-2 text-sm outline-none
+                         border-gray-300 bg-white text-gray-900
+                         focus:ring-2 focus:ring-[#ed374f] focus:border-[#ed374f]
+                         dark:border-gray-600 dark:bg-[#1e1e1e] dark:text-gray-100"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
               placeholder="예: 준"
@@ -113,14 +135,17 @@ export default function LockScreen({
 
           {/* 비밀번호 */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               비밀번호 (숫자 8자리)
             </label>
             <input
               type="password"
               inputMode="numeric"
               maxLength={8}
-              className="w-full border border-gray-600 bg-[#1e1e1e] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-[#ed374f] transition"
+              className="w-full border rounded-lg px-3 py-2 text-sm outline-none
+                         border-gray-300 bg-white text-gray-900
+                         focus:ring-2 focus:ring-[#ed374f] focus:border-[#ed374f]
+                         dark:border-gray-600 dark:bg-[#1e1e1e] dark:text-gray-100"
               value={pw}
               onChange={(e) => {
                 const next = e.target.value.replace(/[^0-9]/g, "");
@@ -133,14 +158,17 @@ export default function LockScreen({
           {/* 비밀번호 확인 (회원가입 모드에서만) */}
           {mode === "register" && (
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 비밀번호 확인
               </label>
               <input
                 type="password"
                 inputMode="numeric"
                 maxLength={8}
-                className="w-full border border-gray-600 bg-[#1e1e1e] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-[#ed374f] transition"
+                className="w-full border rounded-lg px-3 py-2 text-sm outline-none
+                           border-gray-300 bg-white text-gray-900
+                           focus:ring-2 focus:ring-[#ed374f] focus:border-[#ed374f]
+                           dark:border-gray-600 dark:bg-[#1e1e1e] dark:text-gray-100"
                 value={pw2}
                 onChange={(e) => {
                   const next = e.target.value.replace(/[^0-9]/g, "");
@@ -152,13 +180,21 @@ export default function LockScreen({
           )}
 
           {/* 에러 */}
-          {error && <div className="text-sm text-[#ed374f]">{error}</div>}
+          {error && (
+            <div className="text-sm text-[#ed374f]">
+              {error}
+            </div>
+          )}
 
           {/* 버튼 */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#ed374f] hover:bg-[#d21731] active:bg-[#b9122a] text-white text-sm font-medium rounded-lg py-2 transition-colors disabled:opacity-50 shadow-[0_0_10px_rgba(237,26,54,0.3)] hover:shadow-[0_0_20px_rgba(237,26,54,0.4)]"
+            className="w-full bg-[#ed374f] hover:bg-[#d21731] active:bg-[#b9122a]
+                       text-white text-sm font-medium rounded-lg py-2
+                       transition-colors disabled:opacity-50
+                       shadow-[0_0_10px_rgba(237,26,54,0.3)]
+                       hover:shadow-[0_0_20px_rgba(237,26,54,0.4)]"
           >
             {loading
               ? mode === "login"
@@ -169,10 +205,6 @@ export default function LockScreen({
               : "회원가입"}
           </button>
         </form>
-
-        <p className="text-[11px] text-center text-gray-500 mt-6 leading-relaxed">
-          닉네임 + 비밀번호로 계정이 저장됩니다.
-        </p>
       </div>
     </div>
   );

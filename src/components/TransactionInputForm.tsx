@@ -16,7 +16,6 @@ function limitLength12(v: string) {
 // 화면 표시용 포맷 (쉼표 삽입)
 function formatWithCommas(v: string) {
   if (!v) return "";
-  // 앞에서 숫자만 남겼으므로 parseInt 후 localeString 사용
   const num = parseInt(v, 10);
   if (isNaN(num)) return "";
   return num.toLocaleString("ko-KR");
@@ -36,21 +35,14 @@ export default function TransactionInputForm() {
 
   const [date, setDate] = useState(todayStr);
   const [type, setType] = useState<"income" | "expense">("expense");
-
-  // 금액은 표시용 문자열 상태로 관리한다 (쉼표 포함)
-  const [amountInput, setAmountInput] = useState("");
-
+  const [amountInput, setAmountInput] = useState(""); // 표시용 문자열
   const [category, setCategory] = useState<string>(CATEGORY_OPTIONS[0]);
   const [memo, setMemo] = useState("");
-
   const [error, setError] = useState<string | null>(null);
 
   function handleAmountChange(e: React.ChangeEvent<HTMLInputElement>) {
-    // 1) 숫자만 추출
     let raw = onlyDigits(e.target.value);
-    // 2) 최대 12자리 제한
     raw = limitLength12(raw);
-    // 3) 쉼표 표시 버전으로 변환
     const display = formatWithCommas(raw);
     setAmountInput(display);
   }
@@ -66,7 +58,6 @@ export default function TransactionInputForm() {
     e.preventDefault();
     setError(null);
 
-    // 금액 검증
     const parsed = toNumber(amountInput);
     if (parsed === null || parsed <= 0) {
       setError("금액을 입력하세요. (1원 이상, 최대 12자리)");
@@ -83,35 +74,33 @@ export default function TransactionInputForm() {
       return;
     }
 
-    // 저장
     addItem({
       date,
       type,
       category: category.trim(),
-      memo: memo.trim(), // memo는 빈 문자여도 허용
+      memo: memo.trim(),
       amount: parsed,
     });
 
-    // 입력값 일부 초기화
     setAmountInput("");
     setMemo("");
-    // date/type/category는 유지
   }
 
   return (
-    <div className="bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
+    <div className="bg-white text-gray-900 dark:bg-[#2b2b2b]/95 dark:text-gray-100 rounded-xl shadow-[0_0_6px_rgba(0,0,0,0.12)] dark:shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
       <h2 className="text-lg font-semibold mb-3">새 거래 입력</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-3 text-sm text-gray-800">
-
+      <form onSubmit={handleSubmit} className="space-y-3 text-sm">
         {/* 날짜 */}
         <div>
-          <label className="block text-xs font-medium text-gray-200 mb-1">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
             날짜
           </label>
           <input
             type="date"
-            className="w-full border border-gray-700 rounded-lg bg-[#1e1e1e] text-gray-100 px-3 py-2 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent"
+            className="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-3 py-2 text-sm outline-none
+                       focus:ring-2 focus:ring-[#ed374f] focus:border-transparent
+                       dark:border-gray-700 dark:bg-[#1e1e1e] dark:text-gray-100"
             value={date}
             onChange={(e) => setDate(e.target.value)}
           />
@@ -119,11 +108,13 @@ export default function TransactionInputForm() {
 
         {/* 구분 */}
         <div>
-          <label className="block text-xs font-medium text-gray-200 mb-1">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
             구분
           </label>
           <select
-            className="w-full border border-gray-700 rounded-lg bg-[#1e1e1e] text-gray-100 px-3 py-2 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent"
+            className="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-3 py-2 text-sm outline-none
+                       focus:ring-2 focus:ring-[#ed374f] focus:border-transparent
+                       dark:border-gray-700 dark:bg-[#1e1e1e] dark:text-gray-100"
             value={type}
             onChange={(e) =>
               setType(e.target.value === "income" ? "income" : "expense")
@@ -136,13 +127,15 @@ export default function TransactionInputForm() {
 
         {/* 금액 (콤마 표시, 숫자만 허용, 12자리 제한) */}
         <div>
-          <label className="block text-xs font-medium text-gray-200 mb-1">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
             금액 (원)
           </label>
           <input
             type="text"
             inputMode="numeric"
-            className="w-full border border-gray-700 rounded-lg bg-[#1e1e1e] text-gray-100 px-3 py-2 text-right font-semibold outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent"
+            className="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-3 py-2 text-right text-sm font-semibold outline-none
+                       focus:ring-2 focus:ring-[#ed374f] focus:border-transparent
+                       dark:border-gray-700 dark:bg-[#1e1e1e] dark:text-gray-100"
             value={amountInput}
             onChange={handleAmountChange}
             placeholder="예: 100,000"
@@ -151,11 +144,13 @@ export default function TransactionInputForm() {
 
         {/* 카테고리 */}
         <div>
-          <label className="block text-xs font-medium text-gray-200 mb-1">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
             카테고리
           </label>
           <select
-            className="w-full border border-gray-700 rounded-lg bg-[#1e1e1e] text-gray-100 px-3 py-2 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent"
+            className="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-3 py-2 text-sm outline-none
+                       focus:ring-2 focus:ring-[#ed374f] focus:border-transparent
+                       dark:border-gray-700 dark:bg-[#1e1e1e] dark:text-gray-100"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
@@ -169,23 +164,25 @@ export default function TransactionInputForm() {
 
         {/* 메모 (30자 제한, 비워도 됨) */}
         <div>
-          <label className="block text-xs font-medium text-gray-200 mb-1">
+          <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">
             메모 (선택)
           </label>
           <input
             type="text"
-            className="w-full border border-gray-700 rounded-lg bg-[#1e1e1e] text-gray-100 px-3 py-2 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-transparent"
+            className="w-full border border-gray-300 bg-white text-gray-900 rounded-lg px-3 py-2 text-sm outline-none
+                       focus:ring-2 focus:ring-[#ed374f] focus:border-transparent
+                       dark:border-gray-700 dark:bg-[#1e1e1e] dark:text-gray-100"
             value={memo}
             onChange={handleMemoChange}
             placeholder="예: OOO 구매"
           />
-          <div className="text-[11px] text-gray-400 mt-1 text-right">
+          <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-1 text-right">
             {memo.length}/30
           </div>
         </div>
 
         {error && (
-          <div className="text-xs text-red-600">{error}</div>
+          <div className="text-xs text-red-600 dark:text-red-400">{error}</div>
         )}
 
         <button

@@ -1,13 +1,15 @@
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { usePasswordGateContext } from "../PasswordGateContext";
+import { useTheme } from "../ThemeContext";
 
 export default function HeaderBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const { currentUser, logout } = usePasswordGateContext();
+  const { theme, toggleTheme } = useTheme();
 
   const isActive = (path: string) => location.pathname.includes(path);
 
@@ -16,22 +18,25 @@ export default function HeaderBar() {
     navigate("/lock", { replace: true });
   }
 
+  function handleCloseMenu() {
+    setIsMenuOpen(false);
+  }
+
   return (
     <>
-      <header className="w-full bg-[#1a1a1a] border-b border-gray-400 text-gray-100">
+      <header className="w-full border-b border-gray-300 bg-white text-gray-900 dark:bg-[#1a1a1a] dark:border-gray-400 dark:text-gray-100">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
 
           {/* 좌측 로고 */}
           <Link
             to="/app"
-            className="text-base font-bold text-gray-100 cursor-pointer hover:text-[#ed374f] transition-colors"
+            className="text-base font-bold cursor-pointer text-gray-900 hover:text-[#ed374f] dark:text-gray-100 transition-colors"
           >
             Account Book
           </Link>
 
           {/* PC 메뉴 */}
-          <nav className="hidden md:flex items-center gap-4 text-sm font-medium text-gray-200">
-
+          <nav className="hidden md:flex items-center gap-4 text-sm font-medium text-gray-700 dark:text-gray-200">
             <Link
               to="/app/ledger"
               className={`hover:text-[#ed374f] transition-colors ${
@@ -50,20 +55,38 @@ export default function HeaderBar() {
               메모장
             </Link>
 
-            <button className="hover:text-[#ed374f] transition-colors text-gray-500 cursor-not-allowed">
-              개발중
-            </button>
-            
+            <Link
+              to="/app/stats"
+              className={`hover:text-[#ed374f] transition-colors ${
+                isActive("stats") ? "text-[#ed374f]" : ""
+              }`}
+            >
+              통계
+            </Link>
+
             {currentUser && (
-              <span className="text-gray-300 text-xs">
+              <span className="text-xs text-gray-500 dark:text-gray-300">
                 {currentUser.nickname} 님
               </span>
             )}
 
-            {/* 🔥 여기 로그아웃 버튼 추가 */}
+            {/* 테마 토글 버튼 */}
+            <button
+              onClick={toggleTheme}
+              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-400 dark:border-gray-500 hover:border-[#ed374f] hover:text-[#ed374f] transition-colors"
+              aria-label="toggle theme"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+            </button>
+
+            {/* 로그아웃 버튼 */}
             <button
               onClick={handleLogout}
-              className="ml-3 px-3 py-1.5 rounded bg-[#ed374f] hover:bg-[#d21731] text-white text-xs transition-colors shadow-sm"
+              className="ml-2 px-3 py-1.5 rounded bg-[#ed374f] hover:bg-[#d21731] text-white text-xs transition-colors shadow-sm"
             >
               로그아웃
             </button>
@@ -71,7 +94,7 @@ export default function HeaderBar() {
 
           {/* 모바일 햄버거 버튼 */}
           <button
-            className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 text-gray-100 hover:bg-[#ed374f] transition-colors"
+            className="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-lg border border-gray-300 text-gray-800 dark:border-gray-200 dark:text-gray-100 hover:bg-[#ed374f] hover:text-white transition-colors"
             aria-label="menu"
             onClick={() => setIsMenuOpen(true)}
           >
@@ -86,31 +109,43 @@ export default function HeaderBar() {
           {/* 오버레이 */}
           <div
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
-            onClick={() => setIsMenuOpen(false)}
+            onClick={handleCloseMenu}
           />
 
-          {/* 슬라이드 메뉴 */}
-          <div className="fixed top-0 right-0 h-full w-64 bg-[#2b2b2b] shadow-lg z-50 md:hidden transform transition-transform duration-300 ease-in-out">
+          {/* 슬라이드 패널 */}
+          <div className="fixed top-0 right-0 h-full w-64 bg-white dark:bg-[#2b2b2b] shadow-lg z-50 md:hidden transform transition-transform duration-300 ease-in-out">
 
-            {/* 닫기 버튼 */}
-            <div className="flex justify-end p-4">
+            {/* 상단: 닫기 + 테마 토글 */}
+            <div className="flex items-center justify-between px-4 pt-4 pb-2">
               <button
-                onClick={() => setIsMenuOpen(false)}
-                className="text-gray-100 hover:text-[#ed374f] transition-colors"
+                onClick={toggleTheme}
+                className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-100 hover:border-[#ed374f] hover:text-[#ed374f] transition-colors"
+                aria-label="toggle theme"
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
+              </button>
+
+              <button
+                onClick={handleCloseMenu}
+                className="text-gray-700 dark:text-gray-100 hover:text-[#ed374f] transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
             {/* 메뉴 항목 */}
-            <nav className="flex flex-col px-4 gap-2">
+            <nav className="flex flex-col px-4 gap-2 pb-4">
               <Link
                 to="/app/ledger"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleCloseMenu}
                 className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   isActive("ledger")
                     ? "bg-[#ed374f] text-white"
-                    : "text-gray-200 hover:bg-gray-700"
+                    : "text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 가계부
@@ -118,40 +153,44 @@ export default function HeaderBar() {
 
               <Link
                 to="/app/memo"
-                onClick={() => setIsMenuOpen(false)}
+                onClick={handleCloseMenu}
                 className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                   isActive("memo")
                     ? "bg-[#ed374f] text-white"
-                    : "text-gray-200 hover:bg-gray-700"
+                    : "text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 메모장(개발중)
               </Link>
 
-              {/* <button
-                className="px-4 py-3 rounded-lg text-sm font-medium text-gray-500 text-left cursor-not-allowed"
-                disabled
+              <Link
+                to="/app/stats"
+                onClick={handleCloseMenu}
+                className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                  isActive("stats")
+                    ? "bg-[#ed374f] text-white"
+                    : "text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
               >
-                개발중
-              </button> */}
-              
+                통계
+              </Link>
+
               {currentUser && (
-                <div className="text-gray-300 text-sm px-4 mb-2">
+                <div className="mt-3 text-sm text-gray-700 dark:text-gray-300 px-1">
                   {currentUser.nickname} 님
                 </div>
               )}
 
-              {/* 🔥 모바일 슬라이드 메뉴 아래쪽에 로그아웃 추가 */}
+              {/* 로그아웃 버튼 */}
               <button
                 onClick={() => {
-                  setIsMenuOpen(false);
+                  handleCloseMenu();
                   handleLogout();
                 }}
                 className="mt-4 px-4 py-3 rounded-lg text-sm font-medium bg-[#ed374f] text-white hover:bg-[#d21731] transition-colors"
               >
                 로그아웃
               </button>
-
             </nav>
           </div>
         </>

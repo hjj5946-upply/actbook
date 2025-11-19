@@ -14,6 +14,7 @@ import AccountBookScreen from "./components/AccountBookScreen";
 import AppLayout from "./components/AppLayout";
 import MemoListScreen from "./components/MemoListScreen";
 import MemoDetailScreen from "./components/MemoDetailScreen";
+import StatsScreen from "./components/StatsScreen";
 
 function LockRoute() {
   const { ready, isLoggedIn, register, login } = usePasswordGateContext();
@@ -69,6 +70,7 @@ export default function App() {
                 <Route path="ledger" element={<AccountBookScreen />} />
                 <Route path="memo" element={<MemoListScreen />} />
                 <Route path="memo/:id" element={<MemoDetailScreen />} />
+                <Route path="stats" element={<StatsScreen />} />
               </Route>
               <Route path="*" element={<Navigate to="/lock" replace />} />
             </Routes>

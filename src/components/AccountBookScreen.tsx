@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLedgerStoreContext } from "../LedgerStoreContext";
 import TransactionInputForm from "./TransactionInputForm";
 import TransactionList from "./TransactionList";
-import BackupPanel from "./BackupPanel";
+// import BackupPanel from "./BackupPanel";
 
 // 요약 타입
 type SummaryStats = {
@@ -18,7 +18,7 @@ function formatKRW(n: number) {
 export default function AccountBookScreen() {
   const { ready } = useLedgerStoreContext();
 
-  // 🔥 거래 내역 필터 결과 기준 요약 상태
+  // 거래 내역 필터 결과 기준 요약 상태
   const [summary, setSummary] = useState<SummaryStats>({
     incomeSum: 0,
     expenseSum: 0,
@@ -27,8 +27,8 @@ export default function AccountBookScreen() {
 
   if (!ready) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500">
-        가계부 불러오는 중...
+      <div className="min-h-screen flex items-center justify-center text-gray-500 dark:text-gray-400">
+        불러오는 중...
       </div>
     );
   }
@@ -37,11 +37,10 @@ export default function AccountBookScreen() {
     <div className="p-4 flex justify-center">
       <div className="w-full max-w-5xl flex flex-col gap-4 md:flex-row">
         <div className="flex-1 flex flex-col gap-4">
-          {/* 🔥 여기서는 이제 "이번 달"이 아니라
-              아래 TransactionList에서 전달해준 필터 결과 요약을 그대로 사용 */}
-          <div className="bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
+          {/* 필터 결과 요약 카드 */}
+          <div className="bg-white text-gray-900 dark:bg-[#2b2b2b]/95 dark:text-gray-100 rounded-xl shadow-[0_0_6px_rgba(0,0,0,0.12)] dark:shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
             <h2 className="text-lg font-semibold mb-2">요약</h2>
-            <div className="text-sm text-gray-200 space-y-1">
+            <div className="text-sm text-gray-700 dark:text-gray-200 space-y-1">
               <div className="flex justify-between">
                 <span>수입 합계</span>
                 <span className="font-medium" style={{ color: "#4fc785ff" }}>
@@ -54,7 +53,7 @@ export default function AccountBookScreen() {
                   -{formatKRW(summary.expenseSum)}
                 </span>
               </div>
-              <div className="flex justify-between border-t border-gray-500 pt-2 mt-2">
+              <div className="flex justify-between border-t border-gray-200 dark:border-gray-500 pt-2 mt-2">
                 <span>남은 금액</span>
                 <span className="font-bold" style={{ color: "#168effff" }}>
                   {formatKRW(summary.remain)}
@@ -64,11 +63,10 @@ export default function AccountBookScreen() {
           </div>
 
           <TransactionInputForm />
-          <BackupPanel />
+          {/* <BackupPanel /> */}
         </div>
 
         <div className="flex-[2]">
-          {/* 🔥 필터 결과 기준 요약을 계산해서 넘겨달라는 콜백 */}
           <TransactionList
             onSummaryChange={(stats) => setSummary(stats)}
           />
