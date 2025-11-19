@@ -53,6 +53,12 @@ export default function HeaderBar() {
             <button className="hover:text-[#ed374f] transition-colors text-gray-500 cursor-not-allowed">
               개발중
             </button>
+            
+            {currentUser && (
+              <span className="text-gray-300 text-xs">
+                {currentUser.nickname} 님
+              </span>
+            )}
 
             {/* 🔥 여기 로그아웃 버튼 추가 */}
             <button
@@ -128,7 +134,13 @@ export default function HeaderBar() {
               >
                 개발중
               </button>
-
+              
+              {currentUser && (
+                <div className="text-gray-300 text-sm px-4 mb-2">
+                  {currentUser.nickname} 님
+                </div>
+              )}
+              
               {/* 🔥 모바일 슬라이드 메뉴 아래쪽에 로그아웃 추가 */}
               <button
                 onClick={() => {
