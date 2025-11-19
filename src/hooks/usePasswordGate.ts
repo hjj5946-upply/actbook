@@ -1,87 +1,99 @@
 import { useState, useEffect } from "react";
+import { registerUser, loginUser } from "./authApi";
+import type { AppUser } from "./authApi";
 
-const PASSWORD_KEY = "ledger_password_hash";
+const CURRENT_USER_KEY = "accountbook.currentUser";
 
-async function sha256Hex(text: string): Promise<string> {
-  const enc = new TextEncoder().encode(text);
-  const digest = await crypto.subtle.digest("SHA-256", enc);
-  const bytes = Array.from(new Uint8Array(digest));
-  return bytes.map(b => b.toString(16).padStart(2, "0")).join("");
+export type CurrentUser = {
+  id: string;
+  nickname: string;
+};
+
+type Result = { ok: boolean; message?: string };
+
+function loadCurrentUser(): CurrentUser | null {
+  try {
+    const raw = localStorage.getItem(CURRENT_USER_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed.id === "string" && typeof parsed.nickname === "string") {
+      return { id: parsed.id, nickname: parsed.nickname };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function saveCurrentUser(user: CurrentUser | null) {
+  if (!user) {
+    localStorage.removeItem(CURRENT_USER_KEY);
+  } else {
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
+  }
 }
 
 export function usePasswordGate() {
   const [ready, setReady] = useState(false);
-  const [hasPassword, setHasPassword] = useState(false);
-  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem(PASSWORD_KEY);
-    setHasPassword(!!stored);
+    const loaded = loadCurrentUser();
+    setCurrentUser(loaded);
     setReady(true);
   }, []);
 
-  // 비밀번호 규칙: 정확히 숫자 8자리
-  function validateFormat(pw: string) {
-    // 정규식: ^[0-9]{8}$
-    return /^[0-9]{8}$/.test(pw);
-  }
+  const isLoggedIn = !!currentUser;
 
-  async function setupPassword(
+  // 회원가입: 닉네임 + 비밀번호 + 비밀번호 확인
+  async function register(
+    nickname: string,
     pw: string,
     confirmPw: string
-  ): Promise<{ ok: boolean; message?: string }> {
-    if (!validateFormat(pw)) {
-      return { ok: false, message: "비밀번호는 숫자 8자리여야 합니다." };
-    }
+  ): Promise<Result> {
     if (pw !== confirmPw) {
       return { ok: false, message: "비밀번호가 일치하지 않습니다." };
     }
 
-    const hash = await sha256Hex(pw);
-    localStorage.setItem(PASSWORD_KEY, hash);
+    const res = await registerUser(nickname, pw);
+    if (!res.ok) {
+      return { ok: false, message: res.message };
+    }
 
-    setHasPassword(true);
-    setIsUnlocked(true);
+    const user = res.user as AppUser;
+    const simple: CurrentUser = { id: user.id, nickname: user.nickname };
+    setCurrentUser(simple);
+    saveCurrentUser(simple);
 
     return { ok: true };
   }
 
-  async function unlock(pw: string): Promise<{ ok: boolean; message?: string }> {
-    const stored = localStorage.getItem(PASSWORD_KEY);
-    if (!stored) {
-      return { ok: false, message: "등록된 비밀번호가 없습니다." };
+  // 로그인: 닉네임 + 비밀번호
+  async function login(nickname: string, pw: string): Promise<Result> {
+    const res = await loginUser(nickname, pw);
+    if (!res.ok) {
+      return { ok: false, message: res.message };
     }
 
-    if (!validateFormat(pw)) {
-      return { ok: false, message: "비밀번호는 숫자 8자리입니다." };
-    }
+    const user = res.user as AppUser;
+    const simple: CurrentUser = { id: user.id, nickname: user.nickname };
+    setCurrentUser(simple);
+    saveCurrentUser(simple);
 
-    const hash = await sha256Hex(pw);
-    if (hash === stored) {
-      setIsUnlocked(true);
-      return { ok: true };
-    } else {
-      return { ok: false, message: "비밀번호가 올바르지 않습니다." };
-    }
+    return { ok: true };
   }
 
-  function lock() {
-    setIsUnlocked(false);
-  }
-
-  function resetPassword() {
-    localStorage.removeItem(PASSWORD_KEY);
-    setHasPassword(false);
-    setIsUnlocked(false);
+  function logout() {
+    setCurrentUser(null);
+    saveCurrentUser(null);
   }
 
   return {
     ready,
-    hasPassword,
-    isUnlocked,
-    setupPassword,
-    unlock,
-    lock,
-    resetPassword,
+    currentUser,
+    isLoggedIn,
+    register,
+    login,
+    logout,
   };
 }

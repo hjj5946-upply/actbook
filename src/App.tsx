@@ -16,7 +16,7 @@ import MemoListScreen from "./components/MemoListScreen";
 import MemoDetailScreen from "./components/MemoDetailScreen";
 
 function LockRoute() {
-  const { ready, hasPassword, setupPassword, unlock, isUnlocked } = usePasswordGateContext();
+  const { ready, isLoggedIn, register, login } = usePasswordGateContext();
 
   if (!ready) {
     return (
@@ -26,21 +26,20 @@ function LockRoute() {
     );
   }
 
-  if (isUnlocked) {
+  if (isLoggedIn) {
     return <Navigate to="/app" replace />;
   }
 
   return (
     <LockScreen
-      hasPassword={hasPassword}
-      onSetup={setupPassword}
-      onUnlock={unlock}
+      onRegister={register}
+      onLogin={login}
     />
   );
 }
 
 function AppRoute() {
-  const { ready, isUnlocked } = usePasswordGateContext();
+  const { ready, isLoggedIn } = usePasswordGateContext();
 
   if (!ready) {
     return (
@@ -50,7 +49,7 @@ function AppRoute() {
     );
   }
 
-  if (!isUnlocked) {
+  if (!isLoggedIn) {
     return <Navigate to="/lock" replace />;
   }
 

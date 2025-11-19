@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import { LockKeyhole, LockKeyholeOpen } from "lucide-react";
 
+type Result = { ok: boolean; message?: string };
+
 type LockScreenProps = {
-  hasPassword: boolean;
-  onSetup: (
+  onRegister: (
+    nickname: string,
     pw: string,
     confirmPw: string
-  ) => Promise<{ ok: boolean; message?: string }>;
-  onUnlock: (
-    pw: string
-  ) => Promise<{ ok: boolean; message?: string }>;
+  ) => Promise<Result>;
+  onLogin: (nickname: string, pw: string) => Promise<Result>;
 };
 
 export default function LockScreen({
-  hasPassword,
-  onSetup,
-  onUnlock,
+  onRegister,
+  onLogin,
 }: LockScreenProps) {
+  const [mode, setMode] = useState<"login" | "register">("login");
+  const [nickname, setNickname] = useState("");
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +28,14 @@ export default function LockScreen({
     setLoading(true);
     setError(null);
 
-    if (!hasPassword) {
-      const result = await onSetup(pw, pw2);
+    if (!nickname.trim()) {
+      setLoading(false);
+      setError("닉네임을 입력해주세요.");
+      return;
+    }
+
+    if (mode === "register") {
+      const result = await onRegister(nickname, pw, pw2);
       setLoading(false);
       if (!result.ok) {
         setError(result.message ?? "오류");
@@ -36,7 +43,7 @@ export default function LockScreen({
         setPw2("");
       }
     } else {
-      const result = await onUnlock(pw);
+      const result = await onLogin(nickname, pw);
       setLoading(false);
       if (!result.ok) {
         setError(result.message ?? "오류");
@@ -48,20 +55,66 @@ export default function LockScreen({
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a] text-gray-100 px-4">
       <div className="w-full max-w-sm bg-[#2b2b2b]/95 text-gray-100 rounded-xl shadow-[0_0_3px_rgba(255,255,255,0.35)] p-6 backdrop-blur-md transition-shadow">
-        {/* 중앙 아이콘 */}
+        {/* 아이콘 */}
         <h1 className="flex items-center justify-center mb-4">
-          {hasPassword ? (
+          {mode === "login" ? (
             <LockKeyholeOpen className="w-9 h-9 text-[#ed374f]" />
           ) : (
             <LockKeyhole className="w-9 h-9 text-[#ed374f]" />
           )}
         </h1>
 
+        {/* 탭: 로그인 / 회원가입 */}
+        <div className="flex mb-4 text-sm border-b border-gray-700">
+          <button
+            type="button"
+            className={`flex-1 py-2 text-center ${
+              mode === "login"
+                ? "text-[#ed374f] border-b-2 border-[#ed374f]"
+                : "text-gray-400"
+            }`}
+            onClick={() => {
+              setMode("login");
+              setError(null);
+            }}
+          >
+            로그인
+          </button>
+          <button
+            type="button"
+            className={`flex-1 py-2 text-center ${
+              mode === "register"
+                ? "text-[#ed374f] border-b-2 border-[#ed374f]"
+                : "text-gray-400"
+            }`}
+            onClick={() => {
+              setMode("register");
+              setError(null);
+            }}
+          >
+            회원가입
+          </button>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* 비밀번호 입력 */}
+          {/* 닉네임 */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">
-              {hasPassword ? "8자리 숫자 비밀번호" : "새 비밀번호 (숫자 8자리)"}
+              닉네임
+            </label>
+            <input
+              type="text"
+              className="w-full border border-gray-600 bg-[#1e1e1e] rounded-lg px-3 py-2 text-sm text-gray-100 outline-none focus:ring-2 focus:ring-[#ed374f] focus:border-[#ed374f] transition"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="예: 준"
+            />
+          </div>
+
+          {/* 비밀번호 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              비밀번호 (숫자 8자리)
             </label>
             <input
               type="password"
@@ -77,8 +130,8 @@ export default function LockScreen({
             />
           </div>
 
-          {/* 비밀번호 확인 */}
-          {!hasPassword && (
+          {/* 비밀번호 확인 (회원가입 모드에서만) */}
+          {mode === "register" && (
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
                 비밀번호 확인
@@ -98,7 +151,7 @@ export default function LockScreen({
             </div>
           )}
 
-          {/* 에러 메시지 */}
+          {/* 에러 */}
           {error && <div className="text-sm text-[#ed374f]">{error}</div>}
 
           {/* 버튼 */}
@@ -108,17 +161,17 @@ export default function LockScreen({
             className="w-full bg-[#ed374f] hover:bg-[#d21731] active:bg-[#b9122a] text-white text-sm font-medium rounded-lg py-2 transition-colors disabled:opacity-50 shadow-[0_0_10px_rgba(237,26,54,0.3)] hover:shadow-[0_0_20px_rgba(237,26,54,0.4)]"
           >
             {loading
-              ? hasPassword
-                ? "확인 중..."
-                : "저장 중..."
-              : hasPassword
-              ? "해제"
-              : "저장"}
+              ? mode === "login"
+                ? "로그인 중..."
+                : "가입 중..."
+              : mode === "login"
+              ? "로그인"
+              : "회원가입"}
           </button>
         </form>
 
         <p className="text-[11px] text-center text-gray-500 mt-6 leading-relaxed">
-          데이터 보안용 암호화
+          닉네임 + 비밀번호로 계정이 저장됩니다.
         </p>
       </div>
     </div>
