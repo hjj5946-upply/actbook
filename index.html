@@ -1,34 +1,90 @@
 <!doctype html>
 <html lang="ko">
   <head>
-    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Personal AccountBook</title>
 
+    <meta name="google-site-verification" content="UA9MSukb0_mx0uWUC2dRTUn6CNDb-rJBDIac2XGzrHk" />
+    
+    <!-- 파비콘 -->
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <!-- 제목 (검색 결과 + 브라우저 탭) -->
+    <title>용돈기입장 - 무료 웹 가계부 | 설치 없이 지출 관리</title>
+
+    <!-- 검색엔진 설명 -->
+    <meta
+      name="description"
+      content="설치 없이 브라우저에서 바로 쓰는 무료 용돈기입장 웹앱. 수입·지출을 간편하게 기록하고 월별 지출을 한눈에 확인하세요. 회원가입 없이 바로 시작할 수 있습니다."
+    />
+
+    <!-- 키워드 (영향 적지만 넣어두는 정도) -->
+    <meta
+      name="keywords"
+      content="용돈기입장, 가계부, 지출관리, 용돈 관리, 웹 가계부, 무료 가계부, 가계부 앱, 용돈 기록"
+    />
+
+    <!-- 대표 URL 명시 (GitHub Pages 기준) -->
+    <link rel="canonical" href="https://hjj5946-upply.github.io/actbook/" />
+
+    <!-- Open Graph / 카카오톡, SNS 공유용 -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Personal AccountBook" />
-    <meta property="og:description" content="나만의 가계부로 수입과 지출을 간편하게 관리하세요" />
-
-    <meta property="og:image" content="https://hjj5946-upply.github.io/actbook/link_img.png" />
+    <meta property="og:site_name" content="용돈기입장" />
+    <meta property="og:title" content="용돈기입장 - 무료 웹 가계부" />
+    <meta
+      property="og:description"
+      content="설치 없이 브라우저에서 바로 쓰는 무료 용돈기입장 웹앱. 수입과 지출을 간편하게 기록해 보세요."
+    />
+    <meta
+      property="og:image"
+      content="https://hjj5946-upply.github.io/actbook/link_img.png"
+    />
     <!-- Image by Freepik: https://www.freepik.com -->
     <!-- Image by flaticon: https://www.flaticon.com/kr/ -->
-    <meta property="og:url" content="https://hjj5946-upply.github.io/actbook/" />
+    <meta
+      property="og:url"
+      content="https://hjj5946-upply.github.io/actbook/"
+    />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
-    <!-- GitHub Pages SPA redirect 👇 여기 추가! -->
+    <!-- (선택) 트위터 카드 사용 시 -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="용돈기입장 - 무료 웹 가계부" />
+    <meta
+      name="twitter:description"
+      content="설치 없이 브라우저에서 바로 쓰는 무료 용돈기입장 웹앱. 수입과 지출을 간편하게 관리해 보세요."
+    />
+    <meta
+      name="twitter:image"
+      content="https://hjj5946-upply.github.io/actbook/link_img.png"
+    />
+
+    <!-- (선택) 검색 콘솔용 메타 태그 자리 -->
+    <!-- Google Search Console -->
+    <!-- <meta name="google-site-verification" content="여기에_구글_콘솔에서_받은_값" /> -->
+
+    <!-- Naver Search Advisor -->
+    <!-- <meta name="naver-site-verification" content="여기에_네이버_서치어드바이저에서_받은_값" /> -->
+
+    <!-- GitHub Pages SPA용 히스토리 처리 스크립트 그대로 유지 -->
     <script>
-      (function(l) {
-        if (l.search[1] === '/' ) {
-          var decoded = l.search.slice(1).split('&').map(function(s) { 
-            return s.replace(/~and~/g, '&')
-          }).join('?');
-          window.history.replaceState(null, null,
+      (function (l) {
+        if (l.search[1] === "/") {
+          var decoded = l.search
+            .slice(1)
+            .split("&")
+            .map(function (s) {
+              return s.replace(/~and~/g, "&");
+            })
+            .join("?");
+          window.history.replaceState(
+            null,
+            null,
             l.pathname.slice(0, -1) + decoded + l.hash
           );
         }
-      }(window.location))
+      })(window.location);
     </script>
   </head>
   <body>
