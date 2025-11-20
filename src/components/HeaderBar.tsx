@@ -3,6 +3,7 @@ import { Menu, X, Sun, Moon } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { usePasswordGateContext } from "../PasswordGateContext";
 import { useTheme } from "../ThemeContext";
+import PolicyLinks from "./PolicyLinks";
 
 export default function HeaderBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -24,16 +25,18 @@ export default function HeaderBar() {
 
   return (
     <>
+      {/* 상단 헤더 (PC + 모바일 공통) */}
       <header className="w-full border-b border-gray-300 bg-white text-gray-900 dark:bg-[#1a1a1a] dark:border-gray-400 dark:text-gray-100">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
-
-          {/* 좌측 로고 */}
-          <Link
-            to="/app"
-            className="text-base font-bold cursor-pointer text-gray-900 hover:text-[#ed374f] dark:text-gray-100 transition-colors"
-          >
-            Account Book
-          </Link>
+          {/* 좌측: (모바일) 뒤로가기 + 로고 */}
+          <div className="flex items-center gap-2">
+            <Link
+              to="/app"
+              className="text-base font-bold cursor-pointer text-gray-900 hover:text-[#ed374f] dark:text-gray-100 transition-colors"
+            >
+              Account Book
+            </Link>
+          </div>
 
           {/* PC 메뉴 */}
           <nav className="hidden md:flex items-center gap-4 text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -114,9 +117,8 @@ export default function HeaderBar() {
 
           {/* 슬라이드 패널 */}
           <div className="fixed top-0 right-0 h-full w-64 bg-white dark:bg-[#2b2b2b] shadow-lg z-50 md:hidden transform transition-transform duration-300 ease-in-out">
-
-            {/* 상단: 닫기 + 테마 토글 */}
-            <div className="flex items-center justify-between px-4 pt-4 pb-2">
+            {/* 상단: 테마 토글 + 닫기 버튼 */}
+            <div className="flex items-center justify-between px-4 pt-4 pb-6">
               <button
                 onClick={toggleTheme}
                 className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 dark:border-gray-500 text-gray-700 dark:text-gray-100 hover:border-[#ed374f] hover:text-[#ed374f] transition-colors"
@@ -150,7 +152,7 @@ export default function HeaderBar() {
               >
                 가계부
               </Link>
-
+{/* 
               <Link
                 to="/app/memo"
                 onClick={handleCloseMenu}
@@ -161,7 +163,7 @@ export default function HeaderBar() {
                 }`}
               >
                 메모장(개발중)
-              </Link>
+              </Link> */}
 
               <Link
                 to="/app/stats"
@@ -191,6 +193,11 @@ export default function HeaderBar() {
               >
                 로그아웃
               </button>
+
+              {/* 모바일 전용 정책/소개 링크 */}
+              <div className="mt-6 pt-3 border-t border-gray-200 dark:border-gray-600">
+                <PolicyLinks className="justify-start" />
+              </div>
             </nav>
           </div>
         </>

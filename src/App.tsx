@@ -15,6 +15,9 @@ import AppLayout from "./components/AppLayout";
 import MemoListScreen from "./components/MemoListScreen";
 import MemoDetailScreen from "./components/MemoDetailScreen";
 import StatsScreen from "./components/StatsScreen";
+import AboutScreen from "./components/AboutScreen";
+import PrivacyPolicyScreen from "./components/PrivacyPolicyScreen";
+import FaqScreen from "./components/FaqScreen";
 
 function LockRoute() {
   const { ready, isLoggedIn, register, login } = usePasswordGateContext();
@@ -65,6 +68,11 @@ export default function App() {
           <BrowserRouter basename="/actbook">
             <Routes>
               <Route path="/lock" element={<LockRoute />} />
+              
+              <Route path="/about" element={<AboutScreen />} />
+              <Route path="/privacy" element={<PrivacyPolicyScreen />} />
+              <Route path="/faq" element={<FaqScreen />} />
+
               <Route path="/app" element={<AppRoute />}>
                 <Route index element={<Navigate to="/app/ledger" replace />} />
                 <Route path="ledger" element={<AccountBookScreen />} />
