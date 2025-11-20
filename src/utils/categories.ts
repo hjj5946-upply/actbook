@@ -5,5 +5,6 @@ export const CATEGORY_OPTIONS = [
   "생활",
   "쇼핑",
   "급여",
+  "문화&오락",
   "저축"
 ] as const;
