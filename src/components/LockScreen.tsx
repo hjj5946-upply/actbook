@@ -82,11 +82,11 @@ export default function LockScreen({
         {/* 제목 / 설명 */}
         <div className="text-center mb-4">
           <div className="text-base font-semibold mb-1">
-            {mode === "login" ? "가계부 잠금 해제" : "가계부 계정 만들기"}
+            {mode === "login" ? "입력해서 잠금 해제" : "간편 가입하기"}
           </div>
-          <div className="text-[11px] text-gray-500 dark:text-gray-400">
+          {/* <div className="text-[11px] text-gray-500 dark:text-gray-400">
             닉네임과 숫자 8자리 비밀번호로 접속합니다.
-          </div>
+          </div> */}
         </div>
 
         {/* 탭: 로그인 / 회원가입 */}
@@ -129,7 +129,7 @@ export default function LockScreen({
                          dark:border-gray-600 dark:bg-[#1e1e1e] dark:text-gray-100"
               value={nickname}
               onChange={(e) => setNickname(e.target.value)}
-              placeholder="예: 준"
+              placeholder="예: 깐도리"
             />
           </div>
 

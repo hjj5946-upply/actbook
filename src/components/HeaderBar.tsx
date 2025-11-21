@@ -34,7 +34,7 @@ export default function HeaderBar() {
               to="/app"
               className="text-base font-bold cursor-pointer text-gray-900 hover:text-[#ed374f] dark:text-gray-100 transition-colors"
             >
-              Account Book
+              씀씀이 기록
             </Link>
           </div>
 
