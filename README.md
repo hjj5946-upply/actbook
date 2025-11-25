@@ -48,9 +48,12 @@
 
 ### Backend / Infra
 
+
 - **Backend:** Fiber (Go) – API 서버
 - **Auth & DB:** Supabase (Authentication + PostgreSQL)
 - **Deployment (FE):** GitHub Pages
+
+
 
 ---
 
