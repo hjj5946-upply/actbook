@@ -14,7 +14,7 @@ export default function AppLayout() {
       <footer className="hidden md:block border-t border-gray-200 dark:border-gray-700 py-4">
         <div className="max-w-5xl mx-auto px-4 text-center text-[11px] text-gray-500 dark:text-gray-400">
           <PolicyLinks className="justify-center mb-1" />
-          <div>© {new Date().getFullYear()} 용돈기입장 (가칭)</div>
+          <div>© {new Date().getFullYear()} 용돈기입장 (Jun)</div>
         </div>
       </footer>
     </div>
