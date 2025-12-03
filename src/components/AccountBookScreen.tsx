@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLedgerStoreContext } from "../LedgerStoreContext";
 import TransactionInputForm from "./TransactionInputForm";
 import TransactionList from "./TransactionList";
+import { formatKRW } from "../utils/format";
 // import BackupPanel from "./BackupPanel";
 
 // 요약 타입
@@ -10,10 +11,6 @@ type SummaryStats = {
   expenseSum: number;
   remain: number;
 };
-
-function formatKRW(n: number) {
-  return n.toLocaleString("ko-KR") + "원";
-}
 
 export default function AccountBookScreen() {
   const { ready } = useLedgerStoreContext();

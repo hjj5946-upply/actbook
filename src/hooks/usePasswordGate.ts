@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { registerUser, loginUser } from "./authApi";
+import { registerUser, loginUser, deleteUser } from "./authApi";
+import { deleteAllLedgerRows } from "./ledgerApi";
 import type { AppUser } from "./authApi";
 
 const CURRENT_USER_KEY = "accountbook.currentUser";
@@ -88,6 +89,32 @@ export function usePasswordGate() {
     saveCurrentUser(null);
   }
 
+  // 회원탈퇴: 모든 데이터 삭제 후 로그아웃
+  async function deleteAccount(): Promise<Result> {
+    if (!currentUser) {
+      return { ok: false, message: "로그인된 사용자가 없습니다." };
+    }
+
+    try {
+      // 1. 모든 거래 내역 삭제
+      await deleteAllLedgerRows(currentUser.id);
+
+      // 2. 사용자 계정 삭제
+      const res = await deleteUser(currentUser.id);
+      if (!res.ok) {
+        return { ok: false, message: res.message };
+      }
+
+      // 3. 로컬 스토리지 정리 및 로그아웃
+      logout();
+
+      return { ok: true };
+    } catch (e) {
+      console.error("deleteAccount error", e);
+      return { ok: false, message: "회원탈퇴 중 오류가 발생했습니다." };
+    }
+  }
+
   return {
     ready,
     currentUser,
@@ -95,5 +122,6 @@ export function usePasswordGate() {
     register,
     login,
     logout,
+    deleteAccount,
   };
 }

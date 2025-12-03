@@ -20,6 +20,20 @@ export type LedgerItem = {
 
 type ImportResult = { ok: boolean; message?: string };
 
+/**
+ * LedgerRow를 LedgerItem으로 변환하는 헬퍼 함수
+ */
+function mapLedgerRowToItem(row: LedgerRow): LedgerItem {
+  return {
+    id: row.id,
+    date: row.date,
+    type: row.type,
+    category: row.category,
+    memo: row.memo ?? "",
+    amount: row.amount,
+  };
+}
+
 // userId: 현재 로그인한 유저의 id (없으면 null)
 export function useLedgerStore(userId: string | null) {
   const [items, setItems] = useState<LedgerItem[]>([]);
@@ -43,15 +57,7 @@ export function useLedgerStore(userId: string | null) {
         const rows: LedgerRow[] = await fetchLedgerRows(userId);
         if (cancelled) return;
 
-        const mapped: LedgerItem[] = rows.map((row) => ({
-          id: row.id,
-          date: row.date,
-          type: row.type,
-          category: row.category,
-          memo: row.memo ?? "",
-          amount: row.amount,
-        }));
-
+        const mapped: LedgerItem[] = rows.map(mapLedgerRowToItem);
         setItems(mapped);
       } catch (e) {
         console.error("load ledger error", e);
@@ -91,15 +97,7 @@ export function useLedgerStore(userId: string | null) {
 
     try {
       const row = await insertLedgerRow(userId, input);
-      const newItem: LedgerItem = {
-        id: row.id,
-        date: row.date,
-        type: row.type,
-        category: row.category,
-        memo: row.memo ?? "",
-        amount: row.amount,
-      };
-
+      const newItem = mapLedgerRowToItem(row);
       setItems((prev) => [newItem, ...prev]);
     } catch (e) {
       console.error("addItem error", e);
@@ -140,15 +138,7 @@ export function useLedgerStore(userId: string | null) {
         amount: patch.amount,
       });
 
-      const updated: LedgerItem = {
-        id: row.id,
-        date: row.date,
-        type: row.type,
-        category: row.category,
-        memo: row.memo ?? "",
-        amount: row.amount,
-      };
-
+      const updated = mapLedgerRowToItem(row);
       setItems((prev) =>
         prev.map((it) => (it.id === id ? updated : it))
       );

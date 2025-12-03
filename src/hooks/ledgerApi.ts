@@ -114,3 +114,16 @@ export async function updateLedgerRow(
 
   return data as LedgerRow;
 }
+
+/** 해당 user의 모든 거래 내역 삭제 */
+export async function deleteAllLedgerRows(userId: string): Promise<void> {
+  const { error } = await supabase
+    .from("ledger_entries")
+    .delete()
+    .eq("user_id", userId);
+
+  if (error) {
+    console.error("deleteAllLedgerRows error", error);
+    throw error;
+  }
+}

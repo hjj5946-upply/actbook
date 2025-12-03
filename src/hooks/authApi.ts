@@ -110,3 +110,28 @@ export async function loginUser(
 
   return { ok: true, user };
 }
+
+/**
+ * 회원탈퇴: 사용자 계정 및 관련 데이터 삭제
+ */
+export async function deleteUser(
+  userId: string
+): Promise<{ ok: true } | { ok: false; message: string }> {
+  try {
+    // app_users 테이블에서 사용자 삭제
+    const { error } = await supabase
+      .from("app_users")
+      .delete()
+      .eq("id", userId);
+
+    if (error) {
+      console.error("deleteUser error", error);
+      return { ok: false, message: "회원탈퇴 중 오류가 발생했습니다." };
+    }
+
+    return { ok: true };
+  } catch (e) {
+    console.error("deleteUser exception", e);
+    return { ok: false, message: "회원탈퇴 중 오류가 발생했습니다." };
+  }
+}

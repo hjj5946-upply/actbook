@@ -18,16 +18,13 @@ import StatsScreen from "./components/StatsScreen";
 import AboutScreen from "./components/AboutScreen";
 import PrivacyPolicyScreen from "./components/PrivacyPolicyScreen";
 import FaqScreen from "./components/FaqScreen";
+import LoadingScreen from "./components/LoadingScreen";
 
 function LockRoute() {
   const { ready, isLoggedIn, register, login } = usePasswordGateContext();
 
   if (!ready) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500">
-        로딩중...
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (isLoggedIn) {
@@ -46,11 +43,7 @@ function AppRoute() {
   const { ready, isLoggedIn } = usePasswordGateContext();
 
   if (!ready) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-500">
-        로딩중...
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (!isLoggedIn) {

@@ -4,12 +4,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { usePasswordGateContext } from "../PasswordGateContext";
 import { useTheme } from "../ThemeContext";
 import PolicyLinks from "./PolicyLinks";
+import DeleteAccountDialog from "./DeleteAccountDialog";
 
 export default function HeaderBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentUser, logout } = usePasswordGateContext();
+  const { currentUser, logout, deleteAccount } = usePasswordGateContext();
   const { theme, toggleTheme } = useTheme();
 
   const isActive = (path: string) => location.pathname.includes(path);
@@ -21,6 +23,17 @@ export default function HeaderBar() {
 
   function handleCloseMenu() {
     setIsMenuOpen(false);
+  }
+
+  async function handleDeleteAccount() {
+    const result = await deleteAccount();
+    if (result.ok) {
+      setIsDeleteDialogOpen(false);
+      navigate("/lock", { replace: true });
+    } else {
+      // 에러는 다이얼로그에서 처리
+      throw new Error(result.message);
+    }
   }
 
   return (
@@ -93,6 +106,14 @@ export default function HeaderBar() {
             >
               로그아웃
             </button>
+
+            {/* 회원탈퇴 버튼 */}
+            <button
+              onClick={() => setIsDeleteDialogOpen(true)}
+              className="ml-1 px-3 py-1.5 rounded border border-gray-300 dark:border-gray-600 hover:border-red-500 hover:text-red-500 text-gray-600 dark:text-gray-400 text-xs transition-colors"
+            >
+              탈퇴
+            </button>
           </nav>
 
           {/* 모바일 햄버거 버튼 */}
@@ -152,18 +173,6 @@ export default function HeaderBar() {
               >
                 가계부
               </Link>
-{/* 
-              <Link
-                to="/app/memo"
-                onClick={handleCloseMenu}
-                className={`px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("memo")
-                    ? "bg-[#ed374f] text-white"
-                    : "text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-              >
-                메모장(개발중)
-              </Link> */}
 
               <Link
                 to="/app/stats"
@@ -194,6 +203,17 @@ export default function HeaderBar() {
                 로그아웃
               </button>
 
+              {/* 회원탈퇴 버튼 */}
+              <button
+                onClick={() => {
+                  handleCloseMenu();
+                  setIsDeleteDialogOpen(true);
+                }}
+                className="mt-2 px-4 py-3 rounded-lg text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-red-500 hover:text-red-500 transition-colors"
+              >
+                회원탈퇴
+              </button>
+
               {/* 모바일 전용 정책/소개 링크 */}
               <div className="mt-6 pt-3 border-t border-gray-200 dark:border-gray-600">
                 <PolicyLinks className="justify-start" />
@@ -201,6 +221,16 @@ export default function HeaderBar() {
             </nav>
           </div>
         </>
+      )}
+
+      {/* 회원탈퇴 다이얼로그 */}
+      {currentUser && (
+        <DeleteAccountDialog
+          isOpen={isDeleteDialogOpen}
+          onClose={() => setIsDeleteDialogOpen(false)}
+          onConfirm={handleDeleteAccount}
+          nickname={currentUser.nickname}
+        />
       )}
     </>
   );
