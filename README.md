@@ -57,3 +57,9 @@
 
 ---
 
+
+### 실행
+- 1. npm install
+- 2. .env 파일 생성 후 supabase 설정
+    VITE_SUPABASE_URL=대쉬보드 프로젝트 url
+    VITE_SUPABASE_ANON_KEY= API 키
